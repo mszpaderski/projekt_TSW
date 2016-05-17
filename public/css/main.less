@@ -1,0 +1,33 @@
+.bordering(@size, @color){
+    border: @size solid @color;
+}
+
+.gradienting(@color1, @color2){
+    background: linear-gradient(@color1 5%, @color2 100%);  
+}
+
+input[type=text],[type=password] {
+    width: 97.7%;
+    height: 34px;
+    padding-left: 5px;
+    margin-bottom: 20px;
+    margin-top: 8px;
+    .bordering(2px, #009449);
+    font-size: 16px;
+}
+ 
+#login {
+    float: right;
+    width: 40%;
+    .gradienting(#009844, #22ff77);
+    .bordering(1px, #009449);
+    font-size: 20px;
+    padding: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    text-shadow: 0px 1px 0px #004000;
+}
+#login:hover{
+    .gradienting(#22ff77, #009844);
+}
