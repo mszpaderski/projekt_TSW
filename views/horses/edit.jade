@@ -1,0 +1,20 @@
+extends ../layout
+
+
+block content
+    h1.
+        Horse ID #{horse._id}
+    form(action='/horses/#{horse._id}/edit',method='post',name='updatehorse',enctype='application/x-www-form-urlencoded')
+        p Name: 
+            input#inputName(type='text', value='#{horse.name}', name='name')
+        p Sex: 
+            input#inputSex(type='checkbox', name='sex', checked=('#{horse.sex}'==='true' ? "checked" : undefined))
+        p Breeder: 
+            input#inputBreeder(type='text', value='#{horse.Breeder}', name='breeder')
+        p 
+            input(type='hidden',value='PUT',name='_method')
+        p 
+            button#btnSubmit(type='submit').
+                Update
+
+
