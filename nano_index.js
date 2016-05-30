@@ -66,7 +66,9 @@ app.use('/panel', routes);
 //routes/horse_crud.js for horse CRUD
 var horses = require('./routes/horse_crud');
 app.use('/horses', horses);
-
+//routes/competitions_crud.js for Competitions CRUD
+var competitions = require('./routes/competition_crud');
+app.use('/competitions', competitions);
 
 // server
 app.set('port', process.env.PORT || 3000);
