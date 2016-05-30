@@ -2,7 +2,7 @@ var http = require('http');
 var express = require('express');
 var app = express();
 var path = require('path');
-var favicon = require('static-favicon');
+var favicon = require('serve-favicon');
 var logger = require('morgan');
 
 
@@ -15,17 +15,23 @@ var passportSocketIo = require('passport.socketio');
 
 //viev engine setup
 app.disable('x-powered-by');
-app.use(favicon());
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+/*
+//handlebars view egine:
 var handlebars = require('express-handlebars').create({defaultLayout:'main'});
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
+*/
+//Jade view engine setup 
+app.set('views', path.join(__dirname, 'views')); 
+app.set('view engine', 'jade'); 
 
 //flash conf
 var flash = require('connect-flash');
@@ -56,7 +62,10 @@ initPassport_Judge(passport);
 
 //routes/index.js for passport login 
 var routes = require('./routes/index')(passport);
-app.use('/', routes);
+app.use('/panel', routes);
+//routes/horse_crud.js for horse CRUD
+var horses = require('./routes/horse_crud');
+app.use('/horses', horses);
 
 
 // server
@@ -84,12 +93,12 @@ function isJudge(id_check){
 //Authentication for admins
 function ensureOnlyAdmin(req, res, next){
     if (isAdmin(req.sessionID)) {return next(); }
-    res.redirect('/admin_p/login')
+    res.redirect('/admin_p/login');
 }
 //Authentication for judges
 function ensureOnlyJudge(req, res, next){
     if (isJudge(req.sessionID)) {return next(); }
-    res.redirect('/judge_p/login')
+    res.redirect('/judge_p/login');
 }
 
 
@@ -99,29 +108,29 @@ app.get('/', function(req, res){
 });
 
 app.get('/watcher_p', function(req, res){
-   res.render('watcher_p'); 
+   res.render('panel/watcher_p'); 
 });
 
 //app.get('/admin_p', ensureOnlyAdmin, function(req, res){
 app.get('/admin_p', function(req, res){
-   res.render('admin_p'); 
+   res.render('panel/admin_p'); 
 });
 
 //app.get('/judge_p', ensureOnlyJudge, function(req, res){
 app.get('/judge_p', function(req, res){
-   res.render('judge_p'); 
+   res.render('panel/judge_p'); 
 });
 
 
 //błędy 404/500
 app.use(function(req, res){
-    res.type('text/html')
+    res.type('text/html');
     res.status(404);
     res.render('404');
 });
 
 app.use(function(req, res){
-    res.type('text/html')
+    res.type('text/html');
     res.status(500);
     res.render('500');
 });
@@ -129,5 +138,5 @@ app.use(function(req, res){
 
 //nasłuchiwanie serwera
 app.listen(app.get('port'), function(){
-    console.log('Server nasłuchuje na porcie:' + app.get('port'))
+    console.log('Server nasłuchuje na porcie:' + app.get('port'));
 });
