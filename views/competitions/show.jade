@@ -1,0 +1,12 @@
+extends ../layout
+
+block content
+    h1.
+        ID: #{competition._id}
+    p Nazwa: #{competition.name}
+    p Data rozegrania: #{competition.competition_date}
+    p Hasło: #{competition.password}
+    p Ilość sędzi: #{competition.judge_val}
+    p Lista sędzi: #{competition.judge_list}
+    p Lista startowa: #{competition.starting_list}
+    p Grupy: #{competition.groups}

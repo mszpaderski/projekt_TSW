@@ -1,0 +1,17 @@
+extends ../layout
+
+block content
+    h1.
+        #{title}
+    form#formAddCompetition(name="addcompetition",method="post",action="/competitions")
+        p Nazwa zawodów: 
+            input#inputName(type="text", placeholder="ex. John", name="name")
+        p Data rozegrania: 
+            input#inputCompetition_date(type="date", name="Competition_date")
+        p Hasło dla sędziów:
+            input#inputPassword(type="password", placeholder="*****", name="password")
+        p Ilość sędziów: 
+            input#inputJudge_val(type="number", name="judge_val")
+        p
+            button#btnSubmit(type="submit") submit
+
