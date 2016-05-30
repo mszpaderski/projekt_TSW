@@ -50,13 +50,8 @@ module.exports = function(passport){
 		failureFlash : true  
 	}));
 
-	/* GET Home Page */
-	router.get('/home', isAuthenticated, function(req, res){
-		res.render('home', { user: req.user });
-	});
-
 	/* Handle Logout */
-	router.get('/signout', function(req, res) {
+	router.get('/logout', function(req, res) {
 		req.logout();
 		res.redirect('/');
 	});

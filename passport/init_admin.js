@@ -7,6 +7,8 @@ module.exports = function(passport){
 	// Passport needs to be able to serialize and deserialize admins to support persistent login sessions
     passport.serializeUser(function(admin, done) {
         console.log('serializing admin: ');console.log(admin);
+   //     var id_ser = 'a' + admin._id; // Bad use of init admin/judge id
+   //     done(null, id_ser);
         done(null, admin._id);
     });
 

@@ -3,19 +3,26 @@
 </div>
 
 
-
 <div class="main">
     
 
-<div class="jumbotron col-lg-6 col-md-6 col-sm-8 col-xs-10" id="log_admin">
-    <form class="form" method="post" action="#">
+<div class="jumbotron col-lg-6 col-md-6 col-sm-8 col-xs-10" id="log_judge">
+    <form class="form-signin" method="POST" action="/login_j">
         <h2>Zaloguj się do panelu sędziego:</h2><br />
         <label>Login:</label><br />
             <input type="text" name="username" id="username"><br />
         <label>Hasło:</label><br />
             <input type="password" name="password" id="password"><br />
-            <input type="button" name="login" id="login" value="Zaloguj"><br /><br />
+            <input type="submit" name="login" id="login" value="Zaloguj"><br /><br />
     </form>
+    
+        <a href="/judge_p/signup">Nowy sędzia</a>
+    
+    
+    {{#if error}}
+        <div class="alert alert-danger">{{error}}</div>
+    {{/if}}
+    
 </div>
 
     

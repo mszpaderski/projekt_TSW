@@ -20,9 +20,10 @@
     "express-session": "^1.13.0",
     "mongodb": "^2.1.18",
     "mongoose": "^4.4.17",
+    "morgan": "^1.7.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.6.1",
-    "socketio": "^1.0.0"
+    "socketio": "^1.0.0",
   }
 }

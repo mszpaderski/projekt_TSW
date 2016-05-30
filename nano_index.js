@@ -2,6 +2,9 @@ var http = require('http');
 var express = require('express');
 var app = express();
 var path = require('path');
+var favicon = require('static-favicon');
+var logger = require('morgan');
+
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -12,6 +15,12 @@ var passportSocketIo = require('passport.socketio');
 
 //viev engine setup
 app.disable('x-powered-by');
+app.use(favicon());
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 var handlebars = require('express-handlebars').create({defaultLayout:'main'});
 
@@ -26,12 +35,17 @@ app.use(flash());
 //Database conf:
 //Mongoose API connection
 var dbConfig = require('./db.js');
+var mongodb = require('mongodb');
 var mongoose = require('mongoose');
 mongoose.connect(dbConfig.url);
 //Passport conf:
 var passport = require('passport');
 var expressSession = require('express-session');
-app.use(expressSession({secret: 'KeyToKingdome'}));
+app.use(expressSession({
+    secret: 'KeyToKingdome',
+    resave: false,
+    saveUninitialized: true
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 //Passport initialize
@@ -51,14 +65,30 @@ app.set('port', process.env.PORT || 3000);
 app.use(express.static(__dirname + '/public'));
 
 
+//Checking authentication
+function isAdmin(id_check){
+    if (id_check.charAt(0) === 'a'){
+        return true;
+    }else {
+        return false;
+    }
+}
+function isJudge(id_check){
+    if (id_check.charAt(0) === 'j'){
+        return true;
+    }else {
+        return false;
+    }
+}
+
 //Authentication for admins
 function ensureOnlyAdmin(req, res, next){
-    if (isAdmin(req.judge)) {return next(); }
+    if (isAdmin(req.sessionID)) {return next(); }
     res.redirect('/admin_p/login')
 }
 //Authentication for judges
 function ensureOnlyJudge(req, res, next){
-    if (isJudge(req.admin)) {return next(); }
+    if (isJudge(req.sessionID)) {return next(); }
     res.redirect('/judge_p/login')
 }
 
@@ -72,11 +102,13 @@ app.get('/watcher_p', function(req, res){
    res.render('watcher_p'); 
 });
 
-app.get('/admin_p', ensureOnlyAdmin, function(req, res){
+//app.get('/admin_p', ensureOnlyAdmin, function(req, res){
+app.get('/admin_p', function(req, res){
    res.render('admin_p'); 
 });
 
-app.get('/judge_p', ensureOnlyJudge, function(req, res){
+//app.get('/judge_p', ensureOnlyJudge, function(req, res){
+app.get('/judge_p', function(req, res){
    res.render('judge_p'); 
 });
 
