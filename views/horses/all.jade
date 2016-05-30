@@ -3,6 +3,9 @@ extends ../layout
 block content
     h1.
          #{title}
+         
+    p 
+        a(href='/horses/new') Dodaj nowego konia
     ul
         - each horse, i in horses
             li
@@ -13,8 +16,8 @@ block content
                 form(action='/horses/#{horse._id}/edit',method='post',enctype='application/x-www-form-urlencoded')
                     input(type='hidden',value='DELETE',name='_method')
                     button(type='submit').
-                        Delete
+                        Usuń
                 p 
-                    a(href='/horses/#{horse._id}/edit') Edit
+                    a(href='/horses/#{horse._id}/edit') Edytuj
                 p
-                    a(href='/horses/#{horse._id}') Show
+                    a(href='/horses/#{horse._id}') Pokaż

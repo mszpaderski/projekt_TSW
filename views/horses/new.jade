@@ -4,11 +4,11 @@ block content
     h1.
         #{title}
     form#formAddHorse(name="addhorse",method="post",action="/horses")
-        p Name: 
+        p Nazwa: 
             input#inputName(type="text", placeholder="ex. John", name="name")
-        p Sex:
+        p Płeć:
             input#inputSex(type="checkbox", name="sex")
-        p Breeder: 
+        p Hodowca: 
             input#inputBreeder(type="text", placeholder="ex. John Smith", name="breeder")
         p
-            button#btnSubmit(type="submit") submit
+            button#btnSubmit(type="submit") Zatwierdź
