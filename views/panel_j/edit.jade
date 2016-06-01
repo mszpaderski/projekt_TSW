@@ -1,0 +1,22 @@
+extends ../layout
+
+
+block content
+    h1.
+        ID: #{judge._id}
+    form(action='/judge_p/#{judge._id}/edit',method='post',name='updatejudge',enctype='application/x-www-form-urlencoded')
+      .form-group
+          input.form-control(type='text', value='#{judge.username}', name="username", placeholder='Login')
+      .form-group
+          input.form-control(type='password', name="password", placeholder='Hasło')
+      .form-group
+          input.form-control(type='text', value='#{judge.firstName}', name="firstName", placeholder='Imię')
+      .form-group
+          input.form-control(type='text', value='#{judge.lastName}', name="lastName", placeholder='Nazwisko')
+        
+
+      p 
+        input(type='hidden',value='PUT',name='_method')
+      p 
+        button#btnSubmit(type='submit').
+                Zaktualizuj

@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+    h1.
+         #{title}
+         
+    p 
+        a(href='/judge_p/signup') Zarejestruj nowego sędziego
+    ul
+        - each judge, i in judges
+            li
+                = judge.username 
+                = judge._id
+                form(action='/judge_p/#{judge._id}/edit',method='post',enctype='application/x-www-form-urlencoded')
+                    input(type='hidden',value='DELETE',name='_method')
+                    button(type='submit').
+                        Usuń
+                p 
+                    a(href='/judge_p/#{judge._id}/edit') Edytuj
+                p
+                    a(href='/judge_p/#{judge._id}') Pokaż
