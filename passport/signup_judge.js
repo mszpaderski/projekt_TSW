@@ -31,6 +31,7 @@ module.exports = function(passport){
                         newJudge.password = createHash(password);
                         newJudge.firstName = req.param('firstName');
                         newJudge.lastName = req.param('lastName');
+                        newJudge.role = 'judge';
 
                         // save the Judge
                         newJudge.save(function(err) {

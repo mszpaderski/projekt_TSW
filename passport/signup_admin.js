@@ -29,6 +29,7 @@ module.exports = function(passport){
                         // set the admin's local credentials
                         newAdmin.username = username;
                         newAdmin.password = createHash(password);
+                        newAdmin.role = 'admin';
 
                         // save the admin
                         newAdmin.save(function(err) {
