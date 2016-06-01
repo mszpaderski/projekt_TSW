@@ -1,17 +1,14 @@
-extends layout
+extends ../layout
 
 block content
   .container
-    h1 Zaloguj się do panelu sędziego:
-    p.lead Say something worthwhile here.
+    h1 Logowanie sędziego
     br
-    form(role='form', action="/login_j",method="post", style='max-width: 300px;')
+    form(role='form', action="/judge_p/login",method="post", style='max-width: 300px;')
       .form-group
           input.form-control(type='text', name="username", placeholder='Login')
       .form-group
         input.form-control(type='password', name="password", placeholder='Hasło')
       button.btn.btn-default(type='submit') Zaloguj
-      &nbsp;
-
 
 

@@ -1,26 +1,14 @@
-<div class="page-header">
-<h3>Tu będzie panel logowania dla Admina</h3>
-</div>
+extends ../layout
+
+block content
+  .container
+    h1 Logowanie administratorskie
+    br
+    form(role='form', action="/admin_p/login",method="post", style='max-width: 300px;')
+      .form-group
+          input.form-control(type='text', name="username", placeholder='Login')
+      .form-group
+        input.form-control(type='password', name="password", placeholder='Hasło')
+      button.btn.btn-default(type='submit') Zaloguj
 
 
-<div class="main">
-    
-
-<div class="jumbotron col-lg-6 col-md-6 col-sm-8 col-xs-10" id="log_admin">
-    <form class="form-signin" method="POST" action="/login_a">
-        <h2>Zaloguj się do panelu admina:</h2><br />
-        <label>Identyfikator admina:</label><br />
-            <input type="text" name="admin_id" id="admin_id"><br />
-        <label>Hasło:</label><br />
-            <input type="password" name="password" id="password"><br />
-            <input type="submit" name="login" id="login" value="Zaloguj"><br /><br />
-    </form>
-        
-    {{#if error}}
-        <div class="alert alert-danger">{{error}}</div>
-    {{/if}}
-    
-</div>
-
-    
-</div>
