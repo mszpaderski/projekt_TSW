@@ -1,0 +1,17 @@
+extends ../layout
+
+
+block content
+    h1.
+        ID: #{admin._id}
+    form(action='/admin_p/#{admin._id}/edit',method='post',name='updateadmin',enctype='application/x-www-form-urlencoded')
+      .form-group
+          input.form-control(type='text', value='#{admin.username}', name="username", placeholder='Login')
+      .form-group
+        input.form-control(type='password', name="password", placeholder='Hasło')
+
+      p 
+        input(type='hidden',value='PUT',name='_method')
+      p 
+        button#btnSubmit(type='submit').
+                Zaktualizuj

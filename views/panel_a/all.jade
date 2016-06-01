@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+    h1.
+         #{title}
+         
+    p 
+        a(href='/admin_p/signup') Zarejestruj nowego administratora
+    ul
+        - each admin, i in admins
+            li
+                = admin.username 
+                = admin._id
+                form(action='/admin_p/#{admin._id}/edit',method='post',enctype='application/x-www-form-urlencoded')
+                    input(type='hidden',value='DELETE',name='_method')
+                    button(type='submit').
+                        Usuń
+                p 
+                    a(href='/admin_p/#{admin._id}/edit') Edytuj
+                p
+                    a(href='/admin_p/#{admin._id}') Pokaż
