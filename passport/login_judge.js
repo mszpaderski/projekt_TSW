@@ -36,6 +36,6 @@ module.exports = function(passport){
 
     var isValidPassword = function(judge, password){
         return bCrypt.compareSync(password, judge.password);
-    }
+    };
     
-}
+};

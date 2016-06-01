@@ -1,5 +1,5 @@
 var LocalStrategy = require('passport-local').Strategy;
-var Judge = require('../models/judge');
+var Judge = require('../models/admin');
 var bCrypt = require('bcrypt-nodejs');
 
 module.exports = function(passport){

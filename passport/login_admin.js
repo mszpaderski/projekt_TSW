@@ -7,9 +7,9 @@ module.exports = function(passport){
 	passport.use('login_admin', new LocalStrategy({
             passReqToCallback : true
         },
-        function(req, admin_id, password, done) { 
+        function(req, username, password, done) { 
             // check in mongo if an admin with admin_id exists or not
-            Admin.findOne({ 'admin_id' :  admin_id }, 
+            Admin.findOne({ 'username' :  username }, 
                 function(err, admin) {
                     // In case of any error, return using the done method
                     if (err)
@@ -36,6 +36,6 @@ module.exports = function(passport){
 
     var isValidPassword = function(admin, password){
         return bCrypt.compareSync(password, admin.password);
-    }
+    };
     
-}
+};
