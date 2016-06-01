@@ -1,4 +1,4 @@
-var LocalStrategy   = require('passport-local').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
 var Admin = require('../models/admin');
 var bCrypt = require('bcrypt-nodejs');
 
@@ -7,11 +7,11 @@ module.exports = function(passport){
 	passport.use('signup_admin', new LocalStrategy({
             passReqToCallback : true // allows us to pass back the entire request to the callback
         },
-        function(req, admin_id, password, done) {
+        function(req, username, password, done) {
 
-            findOrCreateAdmin = function(){
+            var findOrCreateAdmin = function(){
                 // find a Admin in Mongo with provided admin_id
-                Admin.findOne({ 'admin_id' :  admin_id }, function(err, admin) {
+                Admin.findOne({ 'username' :  username }, function(err, admin) {
                     // In case of any error, return using the done method
                     if (err){
                         console.log('Error in SignUp: '+err);
@@ -27,7 +27,7 @@ module.exports = function(passport){
                         var newAdmin = new Admin();
 
                         // set the admin's local credentials
-                        newAdmin.admin_id = admin_id;
+                        newAdmin.username = username;
                         newAdmin.password = createHash(password);
 
                         // save the admin
@@ -51,6 +51,6 @@ module.exports = function(passport){
     // Generates hash using bCrypt
     var createHash = function(password){
         return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
-    }
+    };
 
-}
+};

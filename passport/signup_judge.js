@@ -1,4 +1,4 @@
-var LocalStrategy   = require('passport-local').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
 var Judge = require('../models/judge');
 var bCrypt = require('bcrypt-nodejs');
 
@@ -9,7 +9,7 @@ module.exports = function(passport){
         },
         function(req, username, password, done) {
 
-            findOrCreateJudge = function(){
+            var findOrCreateJudge = function(){
                 // find a Judge in Mongo with provided username
                 Judge.findOne({ 'username' :  username }, function(err, judge) {
                     // In case of any error, return using the done method
@@ -29,7 +29,6 @@ module.exports = function(passport){
                         // set the judge's local credentials
                         newJudge.username = username;
                         newJudge.password = createHash(password);
-                        newJudge.email = req.param('email');
                         newJudge.firstName = req.param('firstName');
                         newJudge.lastName = req.param('lastName');
 
@@ -51,9 +50,12 @@ module.exports = function(passport){
         })
     );
 
+
     // Generates hash using bCrypt
     var createHash = function(password){
         return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
-    }
+    };
 
-}
+    
+    
+};

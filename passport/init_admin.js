@@ -1,5 +1,5 @@
 var login_admin = require('./login_admin');
-//var signup_admin = require('./signup_admin');
+var signup_admin = require('./signup_admin');
 var Admin = require('../models/admin');
 
 module.exports = function(passport){
@@ -21,6 +21,6 @@ module.exports = function(passport){
 
     // Setting up Passport Strategies for Login and SignUp/Registration
     login_admin(passport);
-    //signup_admin(passport);
+    signup_admin(passport);
 
 }

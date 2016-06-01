@@ -7,7 +7,7 @@ var isAuthenticated = function (req, res, next) {
 		return next();
 	// if the user is not authenticated then redirect him to the login page
 	res.redirect('/');
-}
+};
 
 module.exports = function(passport){
 
@@ -15,12 +15,12 @@ module.exports = function(passport){
 	//For Admin
     router.get('/admin_p/login', function(req, res) {
     	// Display the Login page with any flash message, if any
-		res.render('login_admin_p', { message: req.flash('message') });
+		res.render('panel_a/login_admin_p');
 	});
     //For Judge
     router.get('/judge_p/login', function(req, res) {
     	// Display the Login page with any flash message, if any
-		res.render('login_judge_p', { message: req.flash('message') });
+		res.render('panel_j/login_judge_p');
 	});
 
 	/* Handle Login POST */
@@ -38,9 +38,21 @@ module.exports = function(passport){
 	}));
     
     
-	/* GET Registration Page for Judge */
+	/* GET Registration Page for Admin */
+	router.get('/admin_p/signup', function(req, res){
+		res.render('panel_a/register_admin');
+	});
+
+	/* Handle Registration for Admin POST */
+	router.post('/admin_p/signup', passport.authenticate('signup_admin', {
+		successRedirect: '/admin_p',
+		failureRedirect: '/admin_p/signup',
+		failureFlash : true  
+	}));
+    
+    	/* GET Registration Page for Judge */
 	router.get('/judge_p/signup', function(req, res){
-		res.render('register_judge',{message: req.flash('message')});
+		res.render('panel_j/register_judge');
 	});
 
 	/* Handle Registration for Judge POST */
@@ -57,7 +69,7 @@ module.exports = function(passport){
 	});
 
 	return router;
-}
+};
 
 
 

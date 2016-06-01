@@ -62,7 +62,7 @@ initPassport_Judge(passport);
 
 //routes/index.js for passport login 
 var routes = require('./routes/index')(passport);
-app.use('/panel', routes);
+app.use('/', routes);
 //routes/horse_crud.js for horse CRUD
 var horses = require('./routes/horse_crud');
 app.use('/horses', horses);
@@ -110,17 +110,17 @@ app.get('/', function(req, res){
 });
 
 app.get('/watcher_p', function(req, res){
-   res.render('panel/watcher_p'); 
+   res.render('panel_w/watcher_p'); 
 });
 
 //app.get('/admin_p', ensureOnlyAdmin, function(req, res){
 app.get('/admin_p', function(req, res){
-   res.render('panel/admin_p'); 
+   res.render('panel_a/admin_p'); 
 });
 
 //app.get('/judge_p', ensureOnlyJudge, function(req, res){
 app.get('/judge_p', function(req, res){
-   res.render('panel/judge_p'); 
+   res.render('panel_j/judge_p'); 
 });
 
 
