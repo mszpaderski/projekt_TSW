@@ -55,10 +55,41 @@ app.use(expressSession({
 app.use(passport.initialize());
 app.use(passport.session());
 //Passport initialize
-var initPassport_Admin = require('./passport/init_admin');
-var initPassport_Judge = require('./passport/init_judge');
-initPassport_Admin(passport);
-initPassport_Judge(passport);
+var initPassport_User = require('./passport/init_user');
+initPassport_User(passport);
+
+
+//Connect-roles conf:
+var connectRoles = require('connect-roles');
+var roles = new connectRoles({
+    failureHandler: function(req, res, action){
+        res.status(403);
+        res.render('errors/not_logged');
+    }
+});
+app.use(roles.middleware());
+
+roles.use(function (req, action) {
+  if (!req.isAuthenticated()) return action === 'watcher';
+});
+
+
+//Connect-roles judge
+roles.use('judge_p', function(req) {
+    if (req.user.role === 'judge'){
+        return true;
+    }
+});
+//Connect-roles admin
+roles.use('admin_p', function(req) {
+    if (req.user.role === 'admin'){
+        return true;
+    }
+});
+
+
+
+
 
 //routes/index.js for passport login 
 var routes = require('./routes/index')(passport);
@@ -76,33 +107,6 @@ app.set('port', process.env.PORT || 3000);
 app.use(express.static(__dirname + '/public'));
 
 
-//Checking authentication
-function isAdmin(id_check){
-    if (id_check.charAt(0) === 'a'){
-        return true;
-    }else {
-        return false;
-    }
-}
-function isJudge(id_check){
-    if (id_check.charAt(0) === 'j'){
-        return true;
-    }else {
-        return false;
-    }
-}
-
-//Authentication for admins
-function ensureOnlyAdmin(req, res, next){
-    if (isAdmin(req.sessionID)) {return next(); }
-    res.redirect('/admin_p/login');
-}
-//Authentication for judges
-function ensureOnlyJudge(req, res, next){
-    if (isJudge(req.sessionID)) {return next(); }
-    res.redirect('/judge_p/login');
-}
-
 
 //redirecters
 app.get('/', function(req, res){
@@ -113,13 +117,13 @@ app.get('/watcher_p', function(req, res){
    res.render('panel_w/watcher_p'); 
 });
 
-//app.get('/admin_p', ensureOnlyAdmin, function(req, res){
-app.get('/admin_p', function(req, res){
+app.get('/admin_p', roles.can('admin_p'), function(req, res){
+//app.get('/admin_p', function(req, res){
    res.render('panel_a/admin_p'); 
 });
 
-//app.get('/judge_p', ensureOnlyJudge, function(req, res){
-app.get('/judge_p', function(req, res){
+app.get('/judge_p', roles.can('judge_p'), function(req, res){
+//app.get('/judge_p', function(req, res){
    res.render('panel_j/judge_p'); 
 });
 
