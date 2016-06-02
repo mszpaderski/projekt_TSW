@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
  
 module.exports = mongoose.model('Horse',{
     name: String,
-    sex: Boolean,
+    sex: String,
     breeder: String
 });
  
