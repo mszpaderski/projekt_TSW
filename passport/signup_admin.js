@@ -38,7 +38,7 @@ module.exports = function(passport){
                                 throw err;  
                             }
                             console.log('Admin Registration succesful');    
-                            return done(null, newAdmin);
+                            return done(null, req.user);
                         });
                     }
                 });

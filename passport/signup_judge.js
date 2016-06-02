@@ -1,5 +1,5 @@
 var LocalStrategy = require('passport-local').Strategy;
-var Judge = require('../models/admin');
+var Judge = require('../models/judge');
 var bCrypt = require('bcrypt-nodejs');
 
 module.exports = function(passport){
@@ -40,7 +40,7 @@ module.exports = function(passport){
                                 throw err;  
                             }
                             console.log('Judge Registration succesful');    
-                            return done(null, newJudge);
+                            return done(null, req.user);
                         });
                     }
                 });
