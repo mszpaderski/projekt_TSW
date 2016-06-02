@@ -7,7 +7,7 @@ block content
     form(action='/horses/#{horse._id}/edit',method='post',name='updatehorse',enctype='application/x-www-form-urlencoded')
         p Nazwa: 
             input#inputName(type='text', value='#{horse.name}', name='name')
-        p Płeć: 
+        p Płeć(Zaznaczone: Ogier, Odznaczone: Klacz): 
             input#inputSex(type='checkbox', name='sex', checked=('#{horse.sex}'==='true' ? "checked" : false))
         p Hodowca: 
             input#inputBreeder(type='text', value='#{horse.breeder}', name='breeder')
