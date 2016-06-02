@@ -5,6 +5,35 @@ var express = require('express'),
     methodOverride = require('method-override'); //used to manipulate POST
 var Horse = require('../models/horse');
 
+//Connect-roles conf:
+var connectRoles = require('connect-roles');
+var roles = new connectRoles({
+    failureHandler: function(req, res, action){
+        res.status(403);
+        res.render('errors/not_logged');
+    }
+});
+router.use(roles.middleware());
+
+roles.use(function (req, action) {
+  if (!req.isAuthenticated()) return action === 'watcher';
+});
+
+
+//Connect-roles judge
+roles.use('judge_p', function(req) {
+    if (req.user.role === 'judge'){
+        return true;
+    }
+});
+//Connect-roles admin
+roles.use('admin_p', function(req) {
+    if (req.user.role === 'admin'){
+        return true;
+    }
+});
+
+
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(methodOverride(function(req, res){
     if (req.body && typeof req.body === 'object' && '_method in req.body'){
@@ -15,7 +44,7 @@ router.use(methodOverride(function(req, res){
     }
 }));
 
-router.route('/').get(function(req, res, next) {
+router.route('/').get( roles.can('admin_p'), function(req, res, next) {
     //retrieve all horses from Mongo
     mongoose.model('Horse').find({}, function (err, horses) {
         if (err){
@@ -62,7 +91,7 @@ router.route('/').get(function(req, res, next) {
 });
 
 //GET New horse page
-router.get('/new', function(req, res) {
+router.get('/new', roles.can('admin_p'), function(req, res) {
     res.render('horses/new', { title: 'Dodaj konia'});
 });
 
@@ -94,7 +123,7 @@ router.param('id', function(req, res, next, id) {
 
 //Showing horse info
 router.route('/:id')
-  .get(function(req, res) {
+  .get( roles.can('admin_p'), function(req, res) {
     mongoose.model('Horse').findById(req.id, function (err, horse) {
       if (err) {
         console.log('GET Error: There was a problem retrieving: ' + err);
@@ -116,7 +145,7 @@ router.route('/:id')
 
 
 //GET the individual horse by Mongo ID
-router.get('/:id/edit', function(req, res) {
+router.get('/:id/edit', roles.can('admin_p'), function(req, res) {
     //search for the horse within Mongo
     mongoose.model('Horse').findById(req.id, function (err, horse) {
         if (err) {
@@ -179,7 +208,7 @@ router.put('/:id/edit', function(req, res) {
 
 
 //DELETE a horse by ID
-router.delete('/:id/edit', function (req, res){
+router.delete('/:id/edit', roles.can('admin_p'), function (req, res){
     //find horse by ID
     mongoose.model('Horse').findById(req.id, function (err, horse) {
         if (err) {

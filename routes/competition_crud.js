@@ -5,6 +5,34 @@ var express = require('express'),
     methodOverride = require('method-override'); //used to manipulate POST
 var Competition = require('../models/competition');
 
+//Connect-roles conf:
+var connectRoles = require('connect-roles');
+var roles = new connectRoles({
+    failureHandler: function(req, res, action){
+        res.status(403);
+        res.render('errors/not_logged');
+    }
+});
+router.use(roles.middleware());
+
+roles.use(function (req, action) {
+  if (!req.isAuthenticated()) return action === 'watcher';
+});
+
+
+//Connect-roles judge
+roles.use('judge_p', function(req) {
+    if (req.user.role === 'judge'){
+        return true;
+    }
+});
+//Connect-roles admin
+roles.use('admin_p', function(req) {
+    if (req.user.role === 'admin'){
+        return true;
+    }
+});
+
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(methodOverride(function(req, res){
     if (req.body && typeof req.body === 'object' && '_method in req.body'){
@@ -15,7 +43,7 @@ router.use(methodOverride(function(req, res){
     }
 }));
 
-router.route('/').get(function(req, res, next) {
+router.route('/').get( roles.can('admin_p'), function(req, res, next) {
     //retrieve all competitions from Mongo
     mongoose.model('Competition').find({}, function (err, competitions) {
         if (err){
@@ -70,7 +98,7 @@ router.route('/').get(function(req, res, next) {
 });
 
 //GET New competition page
-router.get('/new', function(req, res) {
+router.get('/new', roles.can('admin_p'), function(req, res) {
     res.render('competitions/new', { title: 'Dodaj zawody'});
 });
 
@@ -102,7 +130,7 @@ router.param('id', function(req, res, next, id) {
 
 //Showing competition info
 router.route('/:id')
-  .get(function(req, res) {
+  .get( roles.can('admin_p'), function(req, res) {
     mongoose.model('Competition').findById(req.id, function (err, competition) {
       if (err) {
         console.log('GET Error: There was a problem retrieving: ' + err);
@@ -124,7 +152,7 @@ router.route('/:id')
 
 
 //GET the individual competition by Mongo ID
-router.get('/:id/edit', function(req, res) {
+router.get('/:id/edit', roles.can('admin_p'), function(req, res) {
     //search for the competition within Mongo
     mongoose.model('Competition').findById(req.id, function (err, competition) {
         if (err) {
@@ -195,7 +223,7 @@ router.put('/:id/edit', function(req, res) {
 
 
 //DELETE a competition by ID
-router.delete('/:id/edit', function (req, res){
+router.delete('/:id/edit', roles.can('admin_p'), function (req, res){
     //find competition by ID
     mongoose.model('Competition').findById(req.id, function (err, competition) {
         if (err) {
