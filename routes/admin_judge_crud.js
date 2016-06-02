@@ -99,7 +99,7 @@ module.exports = function(passport){
 
 	/* Handle Registration for Judge POST */
 	router.post('/judge_p/signup', passport.authenticate('signup_judge', {
-		successRedirect: '/judge_p',
+		successRedirect: '/judge_p/all',
 		failureRedirect: '/judge_p/signup',
 		failureFlash : true  
 	}));
@@ -416,9 +416,4 @@ router.delete('/judge_p/:id/edit', roles.can('admin_p'), function (req, res){
     
 	return router;
 };
-
-
-
-
-
 
