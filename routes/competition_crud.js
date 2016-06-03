@@ -5,8 +5,10 @@ var express = require('express'),
     methodOverride = require('method-override'); //used to manipulate POST
 var Competition = require('../models/competition'),
     Player = require('../models/competitions/player'),
-    Group = require('../models/competitions/group');
-    Judge = require('../models/judge');
+    Group = require('../models/competitions/group'),
+    Judge = require('../models/judge'),
+    Horse = require('../models/horse');
+    
 
 //Connect-roles conf:
 var connectRoles = require('connect-roles');
@@ -74,13 +76,28 @@ router.route('/').get( roles.can('admin_p'), function(req, res, next) {
     for( var i=0; i < judge_val; i++ ){
         judge_list[i] = i;
     }
+    var player_val = req.body.player_val;
+    var player_list = [String];
+    for( i=0; i < player_val; i++ ){
+        player_list[i] = i;
+    }
+    var group_val = req.body.group_val;
+    var group_list = [String];
+    for( i=0; i < group_val; i++ ){
+        group_list[i] = i;
+    }
     //calling create function for Mongo
     mongoose.model('Competition').create({
         name : name,
         competition_date: competition_date,
         password: password,
         judge_val: judge_val,
-        judge_list: judge_list
+        judge_list: judge_list,
+        player_val: player_val,
+        player_list: player_list,
+        group_val: group_val,
+        group_list: group_list
+        
     }, function(err, competition) {
         if(err){
             res.send("Błąd przy dodawaniu informacji o zawodach do bazy danych");
@@ -181,9 +198,6 @@ router.get('/new_j/:id', roles.can('admin_p'), function(req, res) {
         }
     });
 });
-
-
-
 //PUT to update a competition by ID
 router.put('/new_j/:id', function(req, res) {
     // Get form values
@@ -205,6 +219,81 @@ router.put('/new_j/:id', function(req, res) {
                       //HTML respond
                       res.format({
                           html: function(){
+                               res.redirect("/competitions/new_pl/" + competition._id);
+                         },
+                         //JSON responds showing the updated values
+                        json: function(){
+                               res.json(competition);
+                         }
+                      });
+               }
+            });
+        });
+});
+
+//ADDING PLAYERS!
+//GET the individual competition by Mongo ID
+router.get('/new_pl/:id', roles.can('admin_p'), function(req, res) {
+    //search for the competition within Mongo
+    mongoose.model('Competition').findById(req.id, function (err, competition) {
+        if (err) {
+            console.log('GET Error: There was a problem retrieving: ' + err);
+        } else {
+            //Return the competition
+            mongoose.model('Horse').find({}, function(err, horses){ 
+                if(err){return console.error(err);} else{
+            res.format({
+                //HTML response will render the 'edit.jade' template
+                html: function(){
+                       res.render('competitions/new_pl', {
+                          title: 'Dodaj ' + competition.player_val + ' zawodników: ' + competition._id,
+                          "competition" : competition,
+                           "horses" : horses
+                      });
+                 },
+                 //JSON response will return the JSON output
+                json: function(){
+                       res.json(competition);
+                 }
+            });
+                }});
+        }
+    });
+});
+//PUT to update a competition by ID
+router.put('/new_pl/:id', function(req, res) {
+    // Get form values
+    var player_list = [String];
+    var player = new Player();
+
+   //find the document by ID
+        mongoose.model('Competition').findById(req.id, function (err, competition) {
+            for(var i=0;i<competition.player_val;i++){
+                player_list[i] = req.body.player_list[i];
+                player.starting_num = i;
+                player.horse_id = req.body.player_list[i];
+                player.grade_id = 'none';
+                player.group_con = 'none';
+                
+                // save the player
+                mongoose.model('Player').create({
+                    starting_num : player.starting_num,
+                    horse_id : player.horse_id,
+                    grade_id : player.grade_id,
+                    group_con : player.group_con                    
+                });
+            }
+            //update it
+            competition.update({
+                player_list: player_list,
+            }, function (err, competitionID) {
+              if (err) {
+                  res.send("There was a problem updating the information to the database: " + err);
+              } 
+              else {
+                      //HTML respond
+                      res.format({
+                          html: function(){
                                res.redirect("/competitions/" + competition._id);
                          },
                          //JSON responds showing the updated values
@@ -216,6 +305,7 @@ router.put('/new_j/:id', function(req, res) {
             });
         });
 });
+
 
 
 //DELETE a competition by ID
