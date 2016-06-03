@@ -3,7 +3,10 @@ var express = require('express'),
     mongoose = require('mongoose'), //mongo connection
     bodyParser = require('body-parser'), //parses information from POST
     methodOverride = require('method-override'); //used to manipulate POST
-var Competition = require('../models/competition');
+var Competition = require('../models/competition'),
+    Player = require('../models/competitions/player'),
+    Group = require('../models/competitions/group');
+    Judge = require('../models/judge');
 
 //Connect-roles conf:
 var connectRoles = require('connect-roles');
@@ -67,18 +70,17 @@ router.route('/').get( roles.can('admin_p'), function(req, res, next) {
     var competition_date = req.body.competition_date;
     var password = req.body.password;
     var judge_val = req.body.judge_val;
-    var judge_list = req.body.judge_list;
-    var starting_list = req.body.starting_list;
-    var groups = req.body.groups;
+    var judge_list = [String];
+    for( var i=0; i < judge_val; i++ ){
+        judge_list[i] = i;
+    }
     //calling create function for Mongo
     mongoose.model('Competition').create({
         name : name,
         competition_date: competition_date,
         password: password,
         judge_val: judge_val,
-        judge_list: judge_list,
-        starting_list: starting_list,
-        groups: groups
+        judge_list: judge_list
     }, function(err, competition) {
         if(err){
             res.send("Błąd przy dodawaniu informacji o zawodach do bazy danych");
@@ -87,7 +89,7 @@ router.route('/').get( roles.can('admin_p'), function(req, res, next) {
             res.format({
                 html: function(){
                     res.location("all");
-                    res.redirect("/competitions");
+                    res.redirect("/competitions/new_j/"+competition._id);//Redirecting to page with Judges to choose
                 },
                 json: function(){
                     res.json(competition);
@@ -150,22 +152,24 @@ router.route('/:id')
     });
   });
 
-
+//ADDING JUDGES
 //GET the individual competition by Mongo ID
-router.get('/:id/edit', roles.can('admin_p'), function(req, res) {
+router.get('/new_j/:id', roles.can('admin_p'), function(req, res) {
     //search for the competition within Mongo
     mongoose.model('Competition').findById(req.id, function (err, competition) {
         if (err) {
             console.log('GET Error: There was a problem retrieving: ' + err);
         } else {
             //Return the competition
-            console.log('GET Retrieving ID: ' + competition._id);
+            mongoose.model('Judge').find({}, function(err, judges){ 
+                if(err){return console.error(err);} else{
             res.format({
                 //HTML response will render the 'edit.jade' template
                 html: function(){
-                       res.render('competitions/edit', {
-                          title: 'Competition ' + competition._id,
-                          "competition" : competition
+                       res.render('competitions/new_j', {
+                          title: 'Dodaj ' + competition.judge_val + ' sędziów: ' + competition._id,
+                          "competition" : competition,
+                           "judges" : judges
                       });
                  },
                  //JSON response will return the JSON output
@@ -173,6 +177,7 @@ router.get('/:id/edit', roles.can('admin_p'), function(req, res) {
                        res.json(competition);
                  }
             });
+                }});
         }
     });
 });
@@ -180,27 +185,18 @@ router.get('/:id/edit', roles.can('admin_p'), function(req, res) {
 
 
 //PUT to update a competition by ID
-router.put('/:id/edit', function(req, res) {
+router.put('/new_j/:id', function(req, res) {
     // Get form values
-    var name = req.body.name;
-    var competition_date = req.body.competition_date;
-    var password = req.body.password;
-    var judge_val = req.body.judge_val;
-    var judge_list = req.body.judge_list;
-    var starting_list = req.body.starting_list;
-    var groups = req.body.groups;
+    var judge_list = [String];
 
    //find the document by ID
         mongoose.model('Competition').findById(req.id, function (err, competition) {
+            for(var i=0;i<competition.judge_val;i++){
+                judge_list[i] = req.body.judge_list[i]; 
+            }
             //update it
             competition.update({
-                name : name,
-                competition_date: competition_date,
-                password: password,
-                judge_val: judge_val,
                 judge_list: judge_list,
-                starting_list: starting_list,
-                groups: groups
             }, function (err, competitionID) {
               if (err) {
                   res.send("There was a problem updating the information to the database: " + err);

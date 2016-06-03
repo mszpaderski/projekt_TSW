@@ -7,6 +7,9 @@ block content
     p Data rozegrania: #{competition.competition_date}
     p Hasło: #{competition.password}
     p Ilość sędzi: #{competition.judge_val}
-    p Lista sędzi: #{competition.judge_list}
+    p Lista sędzi: 
+     ul 
+      each judgeC, i in competition.judge_list
+       li= judgeC
     p Lista startowa: #{competition.starting_list}
     p Grupy: #{competition.groups}

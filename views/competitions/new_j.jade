@@ -1,0 +1,25 @@
+extends ../layout
+
+block content
+    h1.
+         #{title}
+    
+    
+    p
+      ul
+        - each judge, i in judges
+            li
+                = judge.username + ': '  
+                = judge._id
+
+    form(action='/competitions/new_j/#{competition._id}',method='post',name='updatejudges',enctype='application/x-www-form-urlencoded')
+     ul
+       - each i in competition.judge_list
+        li
+            input#inputJudges(type='text', value='#{competition.judge_list[i]}', name='judge_list['+i+']')
+                    
+     p 
+        input(type='hidden',value='PUT',name='_method')
+     p
+        button#btnSubmit(type='submit').
+            Dodaj sędziów
