@@ -11,5 +11,8 @@ block content
      ul 
       each judgeC, i in competition.judge_list
        li= judgeC
-    p Lista startowa: #{competition.starting_list}
+    p Lista startowa:
+         ul 
+      each playerC, i in competition.player_list
+       li= playerC
     p Grupy: #{competition.groups}
