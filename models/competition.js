@@ -5,9 +5,11 @@ module.exports = mongoose.model('Competition',{
     competition_date: { type: Date, default: Date.now },
     password: String,
     judge_val: Number,
+    player_val: Number,
+    group_val: Number,
     judge_list: [],
-    starting_list: [],
-    groups: []
+    player_list: [],
+    group_list: []
     
 });
  
