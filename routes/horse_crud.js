@@ -65,12 +65,7 @@ router.route('/').get( roles.can('admin_p'), function(req, res, next) {
     });
 }).post(function(req, res) { //POST a new horse
     var name = req.body.name;
-    var sex;
-    if(req.body.sex === "on"){
-        sex = "ogier";
-    } else {
-        sex = "klacz";
-    }
+    var sex = req.body.sex;
     var breeder = req.body.breeder;
     //calling create function for Mongo
     mongoose.model('Horse').create({
@@ -181,12 +176,7 @@ router.get('/:id/edit', roles.can('admin_p'), function(req, res) {
 router.put('/:id/edit', function(req, res) {
     // Get form values
     var name = req.body.name;
-    var sex;
-    if(req.body.sex === "on"){
-        sex = "ogier";
-    } else {
-        sex = "klacz";
-    }
+    var sex = req.body.sex;
     var breeder = req.body.breeder;
 
    //find the document by ID

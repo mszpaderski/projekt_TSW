@@ -6,8 +6,10 @@ block content
     form#formAddHorse(name="addhorse",method="post",action="/horses")
         p Nazwa: 
             input#inputName(type="text", placeholder="ex. John", name="name")
-        p Płeć(Zaznaczone: Ogier, Odznaczone: Klacz):
-            input#inputSex(type="checkbox", name="sex", checked = false)
+        p Płeć:
+            select(name="sex")
+                option(value="ogier") Ogier
+                option(value="klacz") Klacz
         p Hodowca: 
             input#inputBreeder(type="text", placeholder="ex. John Smith", name="breeder")
         p
