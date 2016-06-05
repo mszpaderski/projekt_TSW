@@ -1,5 +1,6 @@
 var express = require('express'),
     router = express.Router(),
+    _ = require('underscore'),
     mongoose = require('mongoose'), //mongo connection
     bodyParser = require('body-parser'), //parses information from POST
     methodOverride = require('method-override'); //used to manipulate POST
@@ -7,7 +8,8 @@ var Competition = require('../models/competition'),
     Player = require('../models/competitions/player'),
     Group = require('../models/competitions/group'),
     Judge = require('../models/judge'),
-    Horse = require('../models/horse');
+    Horse = require('../models/horse'),
+    Judge_c = require('../models/competitions/judge_c');
     
 
 //Connect-roles conf:
@@ -72,31 +74,17 @@ router.route('/').get( roles.can('admin_p'), function(req, res, next) {
     var competition_date = req.body.competition_date;
     var password = req.body.password;
     var judge_val = req.body.judge_val;
-    var judge_list = [String];
-    for( var i=0; i < judge_val; i++ ){
-        judge_list[i] = i;
-    }
     var player_val = req.body.player_val;
-    var player_list = [String];
-    for( i=0; i < player_val; i++ ){
-        player_list[i] = i;
-    }
     var group_val = req.body.group_val;
-    var group_list = [String];
-    for( i=0; i < group_val; i++ ){
-        group_list[i] = i;
-    }
+    
     //calling create function for Mongo
     mongoose.model('Competition').create({
         name : name,
         competition_date: competition_date,
         password: password,
         judge_val: judge_val,
-        judge_list: judge_list,
         player_val: player_val,
-        player_list: player_list,
-        group_val: group_val,
-        group_list: group_list
+        group_val: group_val
         
     }, function(err, competition) {
         if(err){
@@ -147,6 +135,7 @@ router.param('id', function(req, res, next, id) {
     });
 });
 
+//VIEWING SPECIFIC
 //Showing competition info
 router.route('/:id')
   .get( roles.can('admin_p'), function(req, res) {
@@ -154,20 +143,47 @@ router.route('/:id')
       if (err) {
         console.log('GET Error: There was a problem retrieving: ' + err);
       } else {
-        console.log('GET Retrieving ID: ' + competition._id);
-        res.format({
-          html: function(){
-              res.render('competitions/show', {
-                "competition" : competition
-              });
-          },
-          json: function(){
-              res.json(competition);
+          //Return the competition
+            mongoose.model('Judge_c').where('competition_id', competition._id).exec(function (err, judge_c){
+                if(err){return console.error(err);} else{
+                    var judges_id = [''];
+                    for( var i = 0; i<judge_c.length; i++){judges_id[i] = judge_c[i].judge_id;}
+            mongoose.model('Judge').where('_id').in(judges_id).exec(function (err, judges){
+                if(err){return console.error(err);} else{
+                mongoose.model('Group').where('competition_id', competition._id).exec(function (err, groups){
+                if(err){return console.error(err);} else{
+          mongoose.model('Player').where('competition_id', competition._id).exec(function (err, players){
+                if(err){return console.error(err);} else{
+                    var players_id = [''];
+                    for( var i = 0; i<players.length; i++){players_id[i] = players[i].horse_id;}
+            mongoose.model('Horse').where('_id').in(players_id).exec(function (err, horses){
+                if(err){return console.error(err);} else{
+                    res.format({
+                            //HTML response will render the 'edit.jade' template
+                            html: function(){
+                                    res.render('competitions/show', {
+                                            "competition" : competition,
+                                            "horses" : horses,
+                                            "judges" : judges,
+                                            "groups" : groups
+                                            
+                                        });
+                                },
+                            //JSON response will return the JSON output
+                            json: function(){
+                                    res.json(competition);
+                                }
+                        });
+                }});
+            }});
+                }});
+            }});
+                
+            }});
           }
-        });
-      }
+        }); 
     });
-  });
+
 
 //ADDING JUDGES
 //GET the individual competition by Mongo ID
@@ -201,17 +217,16 @@ router.get('/new_j/:id', roles.can('admin_p'), function(req, res) {
 //PUT to update a competition by ID
 router.put('/new_j/:id', function(req, res) {
     // Get form values
-    var judge_list = [String];
-
    //find the document by ID
         mongoose.model('Competition').findById(req.id, function (err, competition) {
             for(var i=0;i<competition.judge_val;i++){
-                judge_list[i] = req.body.judge_list[i]; 
+                mongoose.model('Judge_c').create({
+                    judge_id : req.body.judge_list[i],
+                    competition_id : competition._id
+                });
             }
             //update it
-            competition.update({
-                judge_list: judge_list,
-            }, function (err, competitionID) {
+            competition.update({}, function (err, competitionID) {
               if (err) {
                   res.send("There was a problem updating the information to the database: " + err);
               } 
@@ -263,30 +278,94 @@ router.get('/new_pl/:id', roles.can('admin_p'), function(req, res) {
 //PUT to update a competition by ID
 router.put('/new_pl/:id', function(req, res) {
     // Get form values
-    var player_list = [String];
-    var player = new Player();
-
    //find the document by ID
         mongoose.model('Competition').findById(req.id, function (err, competition) {
             for(var i=0;i<competition.player_val;i++){
-                player_list[i] = req.body.player_list[i];
-                player.starting_num = i;
-                player.horse_id = req.body.player_list[i];
-                player.grade_id = 'none';
-                player.group_con = 'none';
-                
                 // save the player
                 mongoose.model('Player').create({
-                    starting_num : player.starting_num,
-                    horse_id : player.horse_id,
-                    grade_id : player.grade_id,
-                    group_con : player.group_con                    
+                    starting_num : i,
+                    horse_id : req.body.player_list[i],
+                    competition_id : competition._id,
                 });
             }
             //update it
-            competition.update({
-                player_list: player_list,
-            }, function (err, competitionID) {
+            competition.update({}, function (err, competitionID) {
+              if (err) {
+                  res.send("There was a problem updating the information to the database: " + err);
+              } 
+              else {
+                      //HTML respond
+                      res.format({
+                          html: function(){
+                               res.redirect("/competitions/new_g/" + competition._id);
+                         },
+                         //JSON responds showing the updated values
+                        json: function(){
+                               res.json(competition);
+                         }
+                      });
+               }
+            });
+        });
+});
+
+//ADDING GROUPS!
+//GET the individual competition by Mongo ID
+router.get('/new_g/:id', roles.can('admin_p'), function(req, res) {
+    //search for the competition within Mongo
+    mongoose.model('Competition').findById(req.id, function (err, competition) {
+        if (err) {
+            console.log('GET Error: There was a problem retrieving: ' + err);
+        } else {
+            //Return the competition
+            mongoose.model('Player').where('competition_id', competition._id).select('horse_id').exec(function (err, players){
+                if(err){return console.error(err);} else{
+                    var horses_id = [''];
+                    for( var i = 0; i<players.length; i++){horses_id[i] = players[i].horse_id;}
+                    mongoose.model('Horse').where('_id').in(horses_id).exec(function (err, horses){
+                        if(err){return console.error(err);} else{
+                                res.format({
+                            //HTML response will render the 'edit.jade' template
+                                    html: function(){
+                                           res.render('competitions/new_g', {
+                                                 title: 'Dodaj ' + competition.group_val + ' grup z zawodnikami: ' + competition._id,
+                                                 "competition" : competition,
+                                                 "horses" : horses
+                                            });
+                                    },
+                            //JSON response will return the JSON output
+                                    json: function(){
+                                            res.json(competition);
+                                    }
+                                });
+                        }});
+                }});
+        }
+    });
+});
+//PUT to update a competition by ID
+router.put('/new_g/:id', function(req, res) {
+    // Get form values
+   //find the document by ID
+        mongoose.model('Competition').findById(req.id, function (err, competition) {
+            for(var i=0;i<competition.group_val;i++){
+                var players = [];
+                for(var n=0; n < competition.player_val ; n++){
+                    console.log(req.body.players[i][n]);
+                    if(req.body.players[i][n] !== 'none'){
+                        players.push(req.body.players[i][n]);
+                    }
+                }
+                // save the player
+                mongoose.model('Group').create({
+                    group_num : req.body.group_num[i],
+                    sex : req.body.sex[i],
+                    players : players,
+                    competition_id : competition._id
+                });
+            }
+            //update it
+            competition.update({}, function (err, competitionID) {
               if (err) {
                   res.send("There was a problem updating the information to the database: " + err);
               } 
