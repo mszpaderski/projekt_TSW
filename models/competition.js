@@ -6,10 +6,6 @@ module.exports = mongoose.model('Competition',{
     password: String,
     judge_val: Number,
     player_val: Number,
-    group_val: Number,
-    judge_list: [],
-    player_list: [],
-    group_list: []
-    
+    group_val: Number
 });
  
