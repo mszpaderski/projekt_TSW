@@ -15,12 +15,12 @@ block content
 
     form(action='/competitions/new_pl/#{competition._id}',method='post',name='updatePlayerList',enctype='application/x-www-form-urlencoded')
      ul
-       - each i in competition.player_list
+       - for (i=0; i < competition.player_val; i++)
         li
-            input#inputPlayers(type='text', value='#{competition.player_list[i]}', name='player_list['+i+']')
+            input#inputPlayers(type='text', name='player_list['+i+']')
                     
      p 
         input(type='hidden',value='PUT',name='_method')
      p
         button#btnSubmit(type='submit').
-            Dodaj sędziów
+            Dodaj zawodników

@@ -15,14 +15,19 @@ block content
 
     form(action='/competitions/new_g/#{competition._id}',method='post',name='updateGroups',enctype='application/x-www-form-urlencoded')
      ul
-       - each i in competition.group_list
+      - for (i=0; i < competition.group_val; i++)
         li.container
-            input#inputPlayers(type='text', value='#{competition.jugde_list[i]}', name='player_list['+i+']')
-            input#inputPlayers(type='text', value='#{competition.player_list[i]}', name='player_list['+i+']')
-            input#inputPlayers(type='text', value='#{competition.player_list[i]}', name='player_list['+i+']')
-                    
+            p Nazwa: 
+              input#inputName(type="number", name='group_num['+i+']')
+            p Płeć w grupie:
+              select(name='sex['+i+']')
+                option(value="ogier") Ogier
+                option(value="klacz") Klacz
+            p Lista zawodników w grupie:
+                each hor, n in horses
+                    input#inputPlayers(type='text', value='none', name='players['+i+']['+n+']')
      p 
         input(type='hidden',value='PUT',name='_method')
      p
         button#btnSubmit(type='submit').
-            Dodaj sędziów
+            Dodaj grupy

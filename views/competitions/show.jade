@@ -8,11 +8,20 @@ block content
     p Hasło: #{competition.password}
     p Ilość sędzi: #{competition.judge_val}
     p Lista sędzi: 
-     ul 
-      each judgeC, i in competition.judge_list
-       li= judgeC
+        ul 
+            each judge, i in judges
+                li
+                    = judge.firstName + ' ' + judge.lastName
     p Lista startowa:
          ul 
-      each playerC, i in competition.player_list
-       li= playerC
-    p Grupy: #{competition.groups}
+            each horse, i in horses
+                li= horse.name
+    p Lista grup:
+         ul 
+            each group, i in groups
+                li
+                    = group.group_num + ': ' + group.sex
+                    ul
+                      each player, n in group.players
+                        li
+                          = player
