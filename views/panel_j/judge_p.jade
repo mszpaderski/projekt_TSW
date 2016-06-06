@@ -4,8 +4,7 @@ block content
     script(src="/js/com_serv.js")
 
     h3 Tu będzie panel logowania a potem panel oceniania koni, dla sędziów podczas pokazu
-    
-    form(name="addhorse",method="post",action="/horses")
+    form
         p Typ:
             input(type='number', name="type", id='type')
         p Głowa i szyja:
@@ -17,4 +16,4 @@ block content
         p Ruch:
             input(type='number', name="move", id='move')
         p
-            button#btnSubmit(type="submit") Zatwierdź
+            button(name="grade_add",id="grade_add") Zatwierdź

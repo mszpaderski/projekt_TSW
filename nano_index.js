@@ -68,6 +68,8 @@ app.use(passport.session());
 var initPassport_User = require('./passport/init_user');
 initPassport_User(passport);
 
+
+//SOCKET Conf
 var io = socketIo();
 app.io = io;
 io.attach(server);
@@ -75,11 +77,65 @@ io.use(function(socket, next){
     midleSession(socket.request, {}, next);
 });
 
+
+var Grade = require('./models/competitions/grade'),
+    Player = require('./models/competitions/player'),
+    Judge_c = require('./models/competitions/judge_c'),
+    mongoose = require('mongoose'); //mongo connection
+
+//Socket functions
 io.sockets.on('connection', function(socket){
     var userId = socket.request.session.passport.user;
-    socket.on('Zmiana', function(text){
-        console.log(text + ' ' + userId);
+    var playerId = '57558e341b89299c08d51ab0';
+    var CreateOrUpdateGrade = function(grades){
+       // find a Admin in Mongo with provided admin_id
+       Grade.findOne({ 'judge_id' : userId, 'player_id' : playerId  }, function(err, grade_m) {
+           // In case of any error, return using the done method
+           if (err){
+               console.log('Error in SignUp: '+err);
+            }
+            // already exists -> update
+            if (grade_m) {
+                grade_m.update({
+                kat_1 : grades[0],
+                kat_2 : grades[1],
+                kat_3 : grades[2],
+                kat_4 : grades[3],
+                kat_5 : grades[4]
+                }, function(err, grade_m){if(err){console.log(err);}else{console.log('Grade updated');}});
+            } else {
+                // if there is no grade match
+                // create grade
+                mongoose.model('Grade').create({
+                player_id : playerId,
+                judge_id : userId,
+                kat_1 : grades[0],
+                kat_2 : grades[1],
+                kat_3 : grades[2],
+                kat_4 : grades[3],
+                kat_5 : grades[4]
+                }, function(err, grade_m){if(err){console.log(err);}else{console.log('Grade saved');}});
+            }
+        });
+    };
+    socket.on('Zmiana', function(grades){
+        console.log(grades + ' ' + userId);
+        CreateOrUpdateGrade(grades);
     });
+    
+    socket.on('grade_add', function(grades){
+        console.log(grades);
+        
+
+        CreateOrUpdateGrade(grades);
+    });
+    
+    
+    
+    
+    
+    
+    
     console.log('a user connected' + userId);
     socket.on('disconnect', function(){
     console.log('user disconnected');
