@@ -451,4 +451,55 @@ router.delete('/:id/edit', roles.can('admin_p'), function (req, res){
 });
 
 
+	/* STARTING THE COMPETITION */
+router.route('/start/:id')
+  .get( roles.can('admin_p'), function(req, res) {
+    mongoose.model('Competition').findById(req.id, function (err, competition) {
+      if (err) {
+        console.log('GET Error: There was a problem retrieving: ' + err);
+      } else {
+          //Return the competition
+            mongoose.model('Judge_c').where('competition_id', competition._id).exec(function (err, judge_c){
+                if(err){return console.error(err);} else{
+                    var judges_id = [''];
+                    for( var i = 0; i<judge_c.length; i++){judges_id[i] = judge_c[i].judge_id;}
+            mongoose.model('Judge').where('_id').in(judges_id).exec(function (err, judges){
+                if(err){return console.error(err);} else{
+                mongoose.model('Group').where('competition_id', competition._id).exec(function (err, groups){
+                if(err){return console.error(err);} else{
+          mongoose.model('Player').where('competition_id', competition._id).exec(function (err, players){
+                if(err){return console.error(err);} else{
+                    var players_id = [''];
+                    for( var i = 0; i<players.length; i++){players_id[i] = players[i].horse_id;}
+            mongoose.model('Horse').where('_id').in(players_id).exec(function (err, horses){
+                if(err){return console.error(err);} else{
+                    res.format({
+                            //HTML response will render the 'edit.jade' template
+                            html: function(){
+                                    res.render('competitions/start', {
+                                            "competition" : competition,
+                                            "horses" : horses,
+                                            "judges" : judges,
+                                            "groups" : groups,
+                                            "players" : players,
+                                            "judge_c" : judge_c
+                                        });
+                                },
+                            //JSON response will return the JSON output
+                            json: function(){
+                                    res.json(competition);
+                                }
+                        });
+                }});
+            }});
+                }});
+            }});
+                
+            }});
+          }
+        }); 
+    });
+
+
+
 module.exports = router;
