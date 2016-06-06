@@ -11,16 +11,19 @@ input[type=text],
 }
 button {
   float: right;
-  width: 40%;
+  width: 100px;
   background: linear-gradient(#009844 5%, #22ff77 100%);
   border: 1px solid #009449;
-  font-size: 20px;
-  padding: 8px;
+  font-size: 8px;
+  padding: 3px;
   font-weight: bold;
   cursor: pointer;
   color: white;
   text-shadow: 0px 1px 0px #004000;
 }
-button[type=submit]:hover {
+button:hover {
   background: linear-gradient(#22ff77 5%, #009844 100%);
+}
+button:disabled {
+  background: linear-gradient(#aaaaaa 5%, #555555 100%);
 }
