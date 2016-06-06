@@ -401,9 +401,9 @@ router.delete('/:id/edit', roles.can('admin_p'), function (req, res){
                         players[i].remove(function (err, players){
                             if(err){return console.error(err);} else{
                                 return console.log("Players deleted");
-                            }}
-                    )};       
-            }});
+                            }
+                        });       
+            }}});
             //Deleting Judge_c of this competition
             mongoose.model('Judge_c').where('competition_id', competition._id).exec(function (err, judge_cs){
                 if(err){return console.error(err);} else{
@@ -422,7 +422,7 @@ router.delete('/:id/edit', roles.can('admin_p'), function (req, res){
                         if(err){return console.error(err);} else{
                             return console.log("Groups deleted");
                         }
-                    });       
+                    });     
             }}});
             
             //remove it from Mongo
