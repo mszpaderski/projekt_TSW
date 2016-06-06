@@ -1,0 +1,35 @@
+extends ../layout
+
+block content
+    script(src="/js/com_serv_a.js")
+    
+    h1.
+        ID: #{competition._id}
+    h1 Nazwa: #{competition.name}
+    p Data rozegrania: #{competition.competition_date}
+    p Hasło: #{competition.password}
+    br
+    p Lista sędzi: 
+        ul 
+            each judge, i in judges
+                li
+                    = judge.firstName + ' ' + judge.lastName + ': ' + judge._id
+    br
+    br
+    p Lista startowa:
+         ul 
+            each horse, i in horses
+                li= horse.name + ': ' + horse._id
+    br
+    p Lista grup:
+         ul 
+            each group, i in groups
+                li
+                    = group.group_num + ': ' + group.sex 
+                    button(class='group_start', value=i) Rozpocznij
+                    ul
+                      each player, n in group.players
+                        li
+                          = player
+                          button(class='grade_start', value=player) oceń
+                          button(disabled=true, class='grade_stop', value=player) zakończ
