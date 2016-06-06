@@ -16,7 +16,7 @@ module.exports = function(passport){
                         return done(err);
                     // admin_id does not exist, log the error and redirect back
                     if (!admin){
-                        console.log('Admin Not Found with admin_id '+admin_id);
+                        console.log('Admin Not Found with admin_id '+username);
                         return done(null, false, req.flash('message', 'Admin Not found.'));                 
                     }
                     // Admin exists but wrong password, log the error 
