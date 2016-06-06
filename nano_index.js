@@ -86,10 +86,11 @@ var Grade = require('./models/competitions/grade'),
 //Socket functions
 io.sockets.on('connection', function(socket){
     var userId = socket.request.session.passport.user;
-    var playerId = '57558e341b89299c08d51ab0';
-    var CreateOrUpdateGrade = function(grades){
-       // find a Admin in Mongo with provided admin_id
-       Grade.findOne({ 'judge_id' : userId, 'player_id' : playerId  }, function(err, grade_m) {
+    
+    //Updating/creating GRADE in Mongo
+    var CreateOrUpdateGrade = function(data){
+       // find a grade in Mongo
+       Grade.findOne({ 'judge_id' : userId, 'player_id' : data.playerId  }, function(err, grade_m) {
            // In case of any error, return using the done method
            if (err){
                console.log('Error in SignUp: '+err);
@@ -97,40 +98,45 @@ io.sockets.on('connection', function(socket){
             // already exists -> update
             if (grade_m) {
                 grade_m.update({
-                kat_1 : grades[0],
-                kat_2 : grades[1],
-                kat_3 : grades[2],
-                kat_4 : grades[3],
-                kat_5 : grades[4]
+                kat_1 : data.grades0,
+                kat_2 : data.grades1,
+                kat_3 : data.grades2,
+                kat_4 : data.grades3,
+                kat_5 : data.grades4
                 }, function(err, grade_m){if(err){console.log(err);}else{console.log('Grade updated');}});
             } else {
                 // if there is no grade match
                 // create grade
                 mongoose.model('Grade').create({
-                player_id : playerId,
+                player_id : data.playerId,
                 judge_id : userId,
-                kat_1 : grades[0],
-                kat_2 : grades[1],
-                kat_3 : grades[2],
-                kat_4 : grades[3],
-                kat_5 : grades[4]
+                kat_1 : data.grades0,
+                kat_2 : data.grades1,
+                kat_3 : data.grades2,
+                kat_4 : data.grades3,
+                kat_5 : data.grades4
                 }, function(err, grade_m){if(err){console.log(err);}else{console.log('Grade saved');}});
             }
         });
     };
-    socket.on('Zmiana', function(grades){
+    
+    socket.on('grade_change', function(grades){
         console.log(grades + ' ' + userId);
         CreateOrUpdateGrade(grades);
     });
-    
     socket.on('grade_add', function(grades){
         console.log(grades);
-        
-
         CreateOrUpdateGrade(grades);
     });
     
-    
+    //socket.emit('grade_start_judge', 'INIT');
+    //socket.on('grade_init', function(data){
+    //    socket.emit('grade_start', data);
+    //});
+    socket.on('grade_start', function(player){
+       console.log(player + ':KOŃ');
+       socket.broadcast.emit('grade_start', player); 
+    });
     
     
     
