@@ -13,15 +13,14 @@ block content
                 = competition.competition_date 
                 = competition.password
                 = competition.judge_val
-                = competition.judge_list 
-                = competition.starting_list
-                = competition.groups
+                = competition.player_val 
+                = competition.group_val
                 = competition._id
                 form(action='/competitions/#{competition._id}/edit',method='post',enctype='application/x-www-form-urlencoded')
                     input(type='hidden',value='DELETE',name='_method')
                     button(type='submit').
                        Usuń
-                //p 
-                //    a(href='/competitions/#{competition._id}/edit') Edycja
+                p 
+                    a(href='/competitions/start/#{competition._id}') Rozpocznij
                 p
                     a(href='/competitions/#{competition._id}') Pokaż
