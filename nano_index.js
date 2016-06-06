@@ -1,6 +1,13 @@
-var http = require('http');
 var express = require('express');
+var http = require('http');
 var app = express();
+var server = http.createServer(app);
+//var server = app.listen(3000);
+
+var socketIo = require('socket.io');
+var socketIoClient = require('socket.io-client');
+var passportSocketIo = require('passport.socketio');
+
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -9,8 +16,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var socketIo = require('socket.io');
-var passportSocketIo = require('passport.socketio');
+
 
 
 //viev engine setup
@@ -47,16 +53,38 @@ mongoose.connect(dbConfig.url);
 //Passport conf:
 var passport = require('passport');
 var expressSession = require('express-session');
-app.use(expressSession({
+var midleSession = expressSession({
     secret: 'KeyToKingdome',
     resave: false,
-    saveUninitialized: true
-}));
+    saveUninitialized: true,
+    store: new (require("connect-mongo")(expressSession))({
+        url: dbConfig.url
+    })
+});
+app.use(midleSession);
 app.use(passport.initialize());
 app.use(passport.session());
 //Passport initialize
 var initPassport_User = require('./passport/init_user');
 initPassport_User(passport);
+
+var io = socketIo();
+app.io = io;
+io.attach(server);
+io.use(function(socket, next){
+    midleSession(socket.request, {}, next);
+});
+
+io.sockets.on('connection', function(socket){
+    var userId = socket.request.session.passport.user;
+    socket.on('Zmiana', function(text){
+        console.log(text + ' ' + userId);
+    });
+    console.log('a user connected' + userId);
+    socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+});
 
 
 //Connect-roles conf:
@@ -92,7 +120,7 @@ roles.use('admin_p', function(req) {
 
 
 //routes/index.js for passport login 
-var routes = require('./routes/index')(passport);
+var routes = require('./routes/admin_judge_crud')(passport);
 app.use('/', routes);
 //routes/horse_crud.js for horse CRUD
 var horses = require('./routes/horse_crud');
@@ -143,6 +171,7 @@ app.use(function(req, res){
 
 
 //nasłuchiwanie serwera
-app.listen(app.get('port'), function(){
+server.listen(app.get('port'), function(){
     console.log('Server nasłuchuje na porcie:' + app.get('port'));
 });
+

@@ -9,7 +9,7 @@ input[type=text],
   border: 2px solid #009449;
   font-size: 16px;
 }
-#login {
+button {
   float: right;
   width: 40%;
   background: linear-gradient(#009844 5%, #22ff77 100%);
@@ -21,6 +21,6 @@ input[type=text],
   color: white;
   text-shadow: 0px 1px 0px #004000;
 }
-#login:hover {
+button[type=submit]:hover {
   background: linear-gradient(#22ff77 5%, #009844 100%);
 }
