@@ -204,7 +204,22 @@ app.get('/', function(req, res){
 });
 
 app.get('/watcher_p', function(req, res){
-   res.render('panel_w/watcher_p'); 
+    mongoose.model('Competition').find({}, function (err, competitions) {
+        if (err){
+            return console.error(err);
+        } else {
+            res.format({
+                html: function(){
+                    res.render('panel_w/watcher_p', {
+                        "competitions" : competitions
+                    });
+                },
+                json: function(){
+                     res.json(competitions);
+                }
+            });
+        }
+    });
 });
 
 app.get('/admin_p', roles.can('admin_p'), function(req, res){
