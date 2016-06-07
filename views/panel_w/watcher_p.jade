@@ -3,4 +3,10 @@ extends ../layout
 block content
 
     h3 Tu będzie panel dla widzów na którym będzie można oglądać wyniki
-    
+
+    ul
+        - each competition, i in competitions
+            li
+                = competition.name + ' ' +
+                = competition.competition_date 
+                a(href='/watcher_p/show/#{competition._id}') Pokaż
