@@ -1,5 +1,6 @@
-//var socketIo = require('socket.io');
-//var socketIoClient = require('socket.io-client');
+/* jshint node: true, browser: true  */
+/*global $:false, io:false */
+"use strict";
 
 
 window.addEventListener("load", function (event) {

@@ -1,3 +1,6 @@
+/* jshint node: true */
+"use strict";
+
 var LocalStrategy = require('passport-local').Strategy;
 var Judge = require('../models/judge');
 var bCrypt = require('bcrypt-nodejs');

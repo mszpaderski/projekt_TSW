@@ -7,6 +7,6 @@ block content
     ul
         - each competition, i in competitions
             li
-                = competition.name + ' ' +
-                = competition.competition_date 
+                = competition.name + ' '
+                = competition.competition_date  + ' '
                 a(href='/watcher_p/show/#{competition._id}') Pokaż

@@ -1,3 +1,6 @@
+/* jshint node: true */
+"use strict";
+
 var LocalStrategy = require('passport-local').Strategy;
 var Admin = require('../models/admin');
 var bCrypt = require('bcrypt-nodejs');
@@ -19,7 +22,7 @@ module.exports = function(passport){
                     }
                     // already exists
                     if (admin) {
-                        console.log('Admin already exists with admin_id: '+admin_id);
+                        console.log('Admin already exists with admin_id: '+ admin._id);
                         return done(null, false, req.flash('message','Admin Already Exists'));
                     } else {
                         // if there is no admin with that admin_id

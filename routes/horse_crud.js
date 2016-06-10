@@ -1,3 +1,7 @@
+/* jshint node: true */
+"use strict";
+
+
 var express = require('express'),
     router = express.Router(),
     mongoose = require('mongoose'), //mongo connection
@@ -58,7 +62,7 @@ router.route('/').get( roles.can('admin_p'), function(req, res, next) {
                     });
                 },
                 json: function(){
-                     res.json(infophotos);
+                     res.json(horses);
                 }
             });
         }

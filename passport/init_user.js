@@ -1,3 +1,6 @@
+/* jshint node: true */
+"use strict";
+
 var login_admin = require('./login_admin');
 var signup_admin = require('./signup_admin');
 var login_judge = require('./login_judge');

@@ -1,7 +1,11 @@
+/* jshint node: true */
+"use strict";
+
+
 var express = require('express');
 var router = express.Router(),
     mongoose = require('mongoose'), //mongo connection
-    methodOverride = require('method-override'); //used to manipulate POST
+    methodOverride = require('method-override'), //used to manipulate POST
     bodyParser = require('body-parser'); //parses information from POST
     //Admin = require('../models/Admin');
 var bCrypt = require('bcrypt-nodejs');
@@ -124,7 +128,7 @@ router.route('/admin_p/all').get( roles.can('admin_p'), function(req, res, next)
                     });
                 },
                 json: function(){
-                     res.json(infophotos);
+                     res.json(admins);
                 }
             });
         }
@@ -145,7 +149,7 @@ router.route('/judge_p/all').get( roles.can('admin_p'), function(req, res, next)
                     });
                 },
                 json: function(){
-                     res.json(infophotos);
+                     res.json(judges);
                 }
             });
         }
