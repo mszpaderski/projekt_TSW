@@ -290,6 +290,7 @@ router.put('/new_pl/:id', function(req, res) {
                     starting_num : i,
                     horse_id : req.body.player_list[i],
                     competition_id : competition._id,
+                    current: false
                 });
             }
             //update it
