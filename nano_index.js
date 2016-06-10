@@ -90,8 +90,36 @@ var Grade = require('./models/competitions/grade'),
 io.sockets.on('connection', function(socket){
     var userId = socket.request.session.passport.user;
     
-    //Updating/creating GRADE in Mongo
-    var CreateOrUpdateGrade = function(data){
+
+    
+    //Finding current horse
+    var FindCurrent = function(){
+        Player.findOne({'current' : true}, function(err, horse){
+            if(err){ console.log('Error ' +err);}
+            if(horse){
+                console.log(horse);
+                return horse;
+            } else {
+                console.log('ukulele');
+                return false;
+            }
+        });
+    };
+    //Finding Grade for a players
+    var FindGrade = function(player_id){
+        Grade.findOne({'player_id' : player_id, 'judge_id' : userId}, function(err, grade){
+            if(err){ console.log('Error ' +err);}
+            if(grade){
+                return grade;
+            } else {
+                return false;
+            }
+        });
+    };
+    
+    socket.on('grade_change', function(data){
+        console.log(data + ' ' + userId);
+                //Updating/creating GRADE in Mongo
        // find a grade in Mongo
        Grade.findOne({ 'judge_id' : userId, 'player_id' : data.playerId  }, function(err, grade_m) {
            // In case of any error, return using the done method
@@ -121,35 +149,72 @@ io.sockets.on('connection', function(socket){
                 }, function(err, grade_m){if(err){console.log(err);}else{console.log('Grade saved');}});
             }
         });
-    };
     
-    socket.on('grade_change', function(grades){
-        console.log(grades + ' ' + userId);
-        CreateOrUpdateGrade(grades);
     });
-    socket.on('grade_add', function(grades){
-        console.log(grades);
-        CreateOrUpdateGrade(grades);
+
+    
+    socket.on('grade_start', function(player_id){
+        Player.findOne({'horse_id' : player_id}, function(err, player){
+            if(err){ console.log('Error ' +err);}
+            if(player){
+                player.update({
+                    current : true 
+                }, function(err, player_u){
+                    if(err){console.log(err);} else {
+                        console.log(player_u + ' ' + player);
+                        socket.broadcast.emit('current_horse_ans', { is: 'next', horse: player}); 
+                    }
+                });
+            }
+        });    
     });
     
-    //socket.emit('grade_start_judge', 'INIT');
-    //socket.on('grade_init', function(data){
-    //    socket.emit('grade_start', data);
-    //});
-    socket.on('grade_start', function(player){
-       console.log(player + ':KOŃ');
-       socket.broadcast.emit('grade_start', player); 
+    socket.on('grade_stop', function(player_id){
+        Player.findOne({'horse_id' : player_id}, function(err, player){
+            if(err){ console.log('Error ' +err);}
+            if(player){
+                player.update({
+                    current : false 
+                }, function(err, player_u){
+                    if(err){console.log(err);} else {
+                        console.log(player_u + ' ' + player);
+                        //socket.broadcast.emit('current_horse_ans', { is: 'next', horse: player}); 
+                    }
+                });
+            }
+        });    
     });
     
+    //checking is there a current horse
+    socket.on('current_horse', function(player){
+        Player.findOne({'current' : true}, function(err, horse){
+            if(err){ console.log('Error ' +err);}
+            if(horse){
+                console.log(horse);
+                Grade.findOne({'player_id' : horse._id, 'judge_id' : userId}, function(err, grade){
+                    if(err){ console.log('Error ' +err);}
+                    if(grade){
+                        console.log('Sending: horse ' + horse._id + ' grade ' + grade);
+                        socket.emit('current_horse_ans', { is: 'true' , horse: horse, grade: grade}); 
+                    } else{
+                        console.log('qoue?');
+                        socket.emit('current_horse_ans', { is: 'next', horse: horse}); 
+                    }
+                });
+            } else {
+                socket.emit('current_horse_ans', {is: 'false'}); 
+            }
+        });      
+    });
     
-    
-    
+
     
     console.log('a user connected' + userId);
     socket.on('disconnect', function(){
     console.log('user disconnected');
   });
 });
+
 
 
 //Connect-roles conf:
