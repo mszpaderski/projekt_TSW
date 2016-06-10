@@ -402,34 +402,19 @@ router.delete('/:id/edit', roles.can('admin_p'), function (req, res){
             mongoose.model('Player').where('competition_id', competition._id).exec(function (err, players){
                 if(err){return console.error(err);} else{
                     for (var i = 0; i<players.length; i++){
-                      removeIt(players[i]); 
-                      /*  players[i].remove(function (err, players){
-                            if(err){return console.error(err);} else{
-                                return console.log("Players deleted");
-                            }
-                        });*/       
+                      removeIt(players[i]);        
             }}});
             //Deleting Judge_c of this competition
             mongoose.model('Judge_c').where('competition_id', competition._id).exec(function (err, judge_cs){
                 if(err){return console.error(err);} else{
                   for (var i = 0; i<judge_cs.length; i++){
-                      removeIt(judge_cs[i]); 
-                    /*judge_cs[i].remove(function (err, judge_cs){
-                        if(err){return console.error(err);} else{
-                            return console.log("Judges_c deleted");
-                        }
-                    });*/       
+                      removeIt(judge_cs[i]);    
             }}});
             //Deleting Group of this competition
             mongoose.model('Group').where('competition_id', competition._id).exec(function (err, groups){
                 if(err){return console.error(err);} else{
                   for (var i = 0; i<groups.length; i++){
                     removeIt(groups[i]); 
-                    //groups[i].remove(function (err, groups){
-                    //    if(err){return console.error(err);} else{
-                    //        return console.log("Groups deleted");
-                    //    }
-                    //});     
             }}});
             
             //remove it from Mongo
