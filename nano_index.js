@@ -90,33 +90,6 @@ var Grade = require('./models/competitions/grade'),
 io.sockets.on('connection', function(socket){
     var userId = socket.request.session.passport.user;
     
-
-    
-    //Finding current horse
-    var FindCurrent = function(){
-        Player.findOne({'current' : true}, function(err, horse){
-            if(err){ console.log('Error ' +err);}
-            if(horse){
-                console.log(horse);
-                return horse;
-            } else {
-                console.log('ukulele');
-                return false;
-            }
-        });
-    };
-    //Finding Grade for a players
-    var FindGrade = function(player_id){
-        Grade.findOne({'player_id' : player_id, 'judge_id' : userId}, function(err, grade){
-            if(err){ console.log('Error ' +err);}
-            if(grade){
-                return grade;
-            } else {
-                return false;
-            }
-        });
-    };
-    
     socket.on('grade_change', function(data){
         console.log(data + ' ' + userId);
                 //Updating/creating GRADE in Mongo
@@ -178,7 +151,7 @@ io.sockets.on('connection', function(socket){
                 }, function(err, player_u){
                     if(err){console.log(err);} else {
                         console.log(player_u + ' ' + player);
-                        //socket.broadcast.emit('current_horse_ans', { is: 'next', horse: player}); 
+                        socket.broadcast.emit('current_horse_end', {horse: player}); 
                     }
                 });
             }
@@ -207,6 +180,14 @@ io.sockets.on('connection', function(socket){
         });      
     });
     
+    socket.on('judge_connected', function(){
+        socket.broadcast.emit('judge_connect', userId);
+        console.log('Judge connected: '+userId);
+    });
+    socket.on('disconnect', function(){
+        socket.broadcast.emit('judge_disconnect', userId);
+        console.log('Judge disconnected: '+userId);
+    });
 
     
     console.log('a user connected' + userId);

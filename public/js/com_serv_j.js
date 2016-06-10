@@ -11,6 +11,7 @@ var playerId, id;
 var num = 0;
     
     //setting up
+    socket.emit('judge_connected');
     $('input, button').prop('disabled', true);
     socket.emit('current_horse');
     socket.on('current_horse_ans', function(data){
@@ -77,7 +78,9 @@ $('#grade_add').on('click', function(event){
 
 
     
-    
+    socket.on('disconnect', function () {
+        socket.emit('judge_disconnected');
+    });
     
     
     

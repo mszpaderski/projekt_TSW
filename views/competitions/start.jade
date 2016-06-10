@@ -5,6 +5,7 @@ block content
     
     h1.
         ID: #{competition._id}
+    input(type='hidden', name="competition_id", id='competition_id', disabled=true, value='#{competition._id}')
     h1 Nazwa: #{competition.name}
     p Data rozegrania: #{competition.competition_date}
     p Hasło: #{competition.password}
@@ -14,6 +15,7 @@ block content
             each judge, i in judges
                 li
                     = judge.firstName + ' ' + judge.lastName + ': ' + judge._id
+                    img(id="#{judge._id}", src="/img/bullet_red.png", width='20px')
     br
     br
     p Lista startowa:
