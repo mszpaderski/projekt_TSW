@@ -157,14 +157,37 @@ io.sockets.on('connection', function(socket){
         Player.findOne({'horse_id' : player_id}, function(err, player){
             if(err){ console.log('Error ' +err);}
             if(player){
-                player.update({
-                    current : false 
-                }, function(err, player_u){
-                    if(err){console.log(err);} else {
-                        console.log(player_u + ' ' + player);
-                        socket.broadcast.emit('current_horse_end', {horse: player}); 
+                var final_grade = 0, final_type = 0, final_move = 0;
+                mongoose.model('Grade').where('player_id', player._id).exec(function(err, grades){
+                    if(err){console.log(err);}else{
+                        console.log(grades);
+                        for(var i=0;i<grades.length;i++){
+                            final_grade += parseInt(grades[i].kat_1) + parseInt(grades[i].kat_2) + parseInt(grades[i].kat_3) + parseInt(grades[i].kat_4) + parseInt(grades[i].kat_5);
+                            final_type += parseInt(grades[i].kat_1);
+                            final_move += parseInt(grades[i].kat_5);
+                        }
+                        console.log(final_grade);
+                        console.log(grades.length);
+                        final_grade = final_grade/grades.length;
+                        final_type = final_type/grades.length;
+                        final_move = final_move/grades.length;
+                        console.log(final_grade);
+                        
+                        player.update({
+                            final_grade: final_grade,
+                            final_type: final_type,
+                            final_move: final_move,
+                            current : false 
+                        }, function(err, player_u){
+                            if(err){console.log(err);} else {
+                                console.log(player_u + ' ' + player);
+                                socket.broadcast.emit('current_horse_end', {horse: player}); 
+                            }
+                        });
                     }
                 });
+                
+
             }
         });    
     });
@@ -250,6 +273,9 @@ app.use('/horses', horses);
 //routes/competitions_crud.js for Competitions CRUD
 var competitions = require('./routes/competition_crud');
 app.use('/competitions', competitions);
+//routes/index.js for passport login 
+var watchers = require('./routes/watcher_competition');
+app.use('/watcher_p', watchers);
 
 // server
 app.set('port', process.env.PORT || 3000);
