@@ -8,7 +8,8 @@ var socket = io.connect();
 //JUDGE SIDE
 var grade = [0,0,0,0,0];
 var playerId, id;
-var num = 0;
+var num = 0,
+    end = false;
     
     //setting up
     socket.emit('judge_connected');
@@ -30,6 +31,7 @@ var num = 0;
             $('input').prop('value', num); 
             $('#player_id').prop('value', data.horse._id); 
             $('input, button').prop('disabled', false);
+            end= false;
         } else {
             $('#player').html('Nie ma aktualnie konia do oceny, prosze poczekać.');
             $('input').prop('value', num);
@@ -72,7 +74,9 @@ $('#grade_add').on('click', function(event){
     grade[1] = $('#head').val();
     grade[0] = $('#type').val();
     $('input').prop('disabled', true);
-    socket.emit('grade_change', { playerId: playerId, grades0: grade[0], grades1: grade[1], grades2: grade[2], grades3: grade[3], grades4: grade[4]});
+    end=true;
+    socket.emit('grade_change', { playerId: playerId, grades0: grade[0], grades1: grade[1], grades2: grade[2], grades3: grade[3], grades4: grade[4], end: true});
+    $('#error_field').html('');
 });
 
 
@@ -81,7 +85,11 @@ $('#grade_add').on('click', function(event){
     socket.on('disconnect', function () {
         socket.emit('judge_disconnected');
     });
-    
+    socket.on('reminder', function(){
+        if(!end){
+            $('#error_field').html('Ponaglenie do wystawienia ocen! Ocenianie ma być zakończone jak najszybciej!');
+        }
+    });
     
     
     

@@ -15,7 +15,7 @@ block content
             each judge, i in judges
                 li
                     = judge.firstName + ' ' + judge.lastName + ': ' + judge._id
-                    img(id="#{judge._id}", src="/img/bullet_red.png", width='20px')
+                    img(id="#{judge._id}", src="/img/bullet_red.png", width='20px', class='judge_list')
     br
     br
     p Lista startowa:
@@ -33,5 +33,7 @@ block content
                       each player, n in group.players
                         li
                           = player
+                          span(id='grading#{player}')
                           button(class='grade_start', value=player) oceń
                           button(disabled=true, class='grade_stop', value=player) zakończ
+        p(id='error_field')

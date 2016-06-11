@@ -122,10 +122,12 @@ io.sockets.on('connection', function(socket){
                 }, function(err, grade_m){if(err){console.log(err);}else{console.log('Grade saved');}});
             }
         });
-    
+        if(data.end){
+            socket.broadcast.emit('grade_end', userId);
+        }
     });
 
-    
+    //Admin started grading
     socket.on('grade_start', function(player_id){
         Player.findOne({'horse_id' : player_id}, function(err, player){
             if(err){ console.log('Error ' +err);}
@@ -141,7 +143,16 @@ io.sockets.on('connection', function(socket){
             }
         });    
     });
+    //Admin tried to stop grading, but some judges did not send grade. Sending reminders to judges
+    socket.on('reminder', function(judge_list){
+        console.log('WAT' + judge_list);
+       //for(var i=0;i<judge_list.length;i++){
+           //console.log('Ponaglam: ' + judge_list[i]);
+           socket.broadcast.emit('reminder');
+       //} 
+    });
     
+    //Admin stopped grading
     socket.on('grade_stop', function(player_id){
         Player.findOne({'horse_id' : player_id}, function(err, player){
             if(err){ console.log('Error ' +err);}
