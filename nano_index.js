@@ -145,7 +145,6 @@ io.sockets.on('connection', function(socket){
     });
     //Admin tried to stop grading, but some judges did not send grade. Sending reminders to judges
     socket.on('reminder', function(judge_list){
-        console.log('WAT' + judge_list);
        //for(var i=0;i<judge_list.length;i++){
            //console.log('Ponaglam: ' + judge_list[i]);
            socket.broadcast.emit('reminder');
@@ -166,13 +165,10 @@ io.sockets.on('connection', function(socket){
                             final_type += parseInt(grades[i].kat_1);
                             final_move += parseInt(grades[i].kat_5);
                         }
-                        console.log(final_grade);
-                        console.log(grades.length);
                         final_grade = final_grade/grades.length;
                         final_type = final_type/grades.length;
                         final_move = final_move/grades.length;
-                        console.log(final_grade);
-                        
+
                         player.update({
                             final_grade: final_grade,
                             final_type: final_type,
@@ -181,7 +177,8 @@ io.sockets.on('connection', function(socket){
                         }, function(err, player_u){
                             if(err){console.log(err);} else {
                                 console.log(player_u + ' ' + player);
-                                socket.broadcast.emit('current_horse_end', {horse: player}); 
+                                socket.broadcast.emit('current_horse_end', {horse: player});
+                                socket.broadcast.emit('grade_collect',{horse: player, grades: grades});
                             }
                         });
                     }
