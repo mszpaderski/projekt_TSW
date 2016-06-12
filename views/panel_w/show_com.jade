@@ -2,7 +2,22 @@ extends ../layout
 
 block content
 
-    h3 Konkretne zawody
+    h3 Zawody 
     
-    div(class='jumbotron')
-    
+    div(class='jumbotron col-lg-3 col-md-3 col-sm-2 col-xs-2')
+        h3 RANKING:
+
+        - each group, i in groups
+            span Grupa #{group.group_num}
+            ol
+              - each player, n in groups[i].players
+                li
+                    = '#' + player.starting_num + ': ' + player.horse_id + ': ' + player.final_grade
+        
+        
+        
+    div(class='jumbotron col-lg-9 col-md-9 col-sm-10 col-xs-10')
+        h3 Ocena 
+            span(id='horse_name') w trakcie wystawiania
+        p(id='current_grade')
+        

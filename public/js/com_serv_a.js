@@ -19,6 +19,7 @@ var socket = io.connect();
         $('ulm > li > button').prop('disabled', false);
     });
     
+    //start grading
     $('.grade_start').on('click', function(event){
         horse_id = this.value;
         console.log(horse_id + 'koń');
@@ -35,7 +36,7 @@ var socket = io.connect();
         
     });
 
-    
+    //Stop grading
     $('.grade_stop').on('click', function(event){
         horse_id = this.value;
         console.log(horse_id + 'koń koniec');
