@@ -6,8 +6,9 @@ block content
     
     div(class='jumbotron col-lg-3 col-md-3 col-sm-2 col-xs-2')
         h3 RANKING:
+        span(id='rank')
 
-        - each group, i in groups
+         - each group, i in groups
             span Grupa #{group.group_num}
             ol
               - each player, n in groups[i].players

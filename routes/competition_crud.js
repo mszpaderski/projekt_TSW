@@ -450,6 +450,7 @@ router.delete('/:id/edit', roles.can('admin_p'), function (req, res){
 	/* STARTING THE COMPETITION */
 router.route('/start/:id')
   .get( roles.can('admin_p'), function(req, res) {
+    console.log(req.id);
     mongoose.model('Competition').findById(req.id, function (err, competition) {
       if (err) {
         console.log('GET Error: There was a problem retrieving: ' + err);

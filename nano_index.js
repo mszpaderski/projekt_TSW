@@ -189,6 +189,36 @@ io.sockets.on('connection', function(socket){
         });    
     });
     
+    //updating scoreboard
+    socket.on('scoreboard_update', function(href_a){
+          mongoose.model('Competition').findById(href_a, function(err, competition){
+          if(err){console.log(err);} else{
+           console.log(competition);
+           mongoose.model('Player').where('competition_id', competition._id).exec(function(err, players){
+               if(err){console.log(err);} else{
+                   mongoose.model('Group').where('competition_id', competition._id).exec(function(err, groups){
+                       if(err){console.log(err);} else{
+                           for(var i=0;i<groups.length;i++){
+                               for(var n=0;n<groups[i].players.length;n++){
+                                   for(var e=0;e<players.length;e++){
+                                       if(players[e].horse_id === groups[i].players[n]){
+                                           groups[i].players[n] = players[e];
+                                            console.log('found: ' + groups[i].players[n]);
+                                           break;
+                                       }else{console.log('not found!!!');}
+                                   }
+                               }
+                               groups[i].players.sort(function(a,b){
+                                   return b.final_grade - a.final_grade;
+                               });
+                           }
+                           socket.emit('scoreboard_update', {competition: competition, groups: groups}); 
+                        }});
+                       }});
+               }});
+        });
+
+    
     //checking is there a current horse
     socket.on('current_horse', function(player){
         Player.findOne({'current' : true}, function(err, horse){

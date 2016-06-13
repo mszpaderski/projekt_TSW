@@ -5,8 +5,8 @@
 
 window.addEventListener("load", function (event) {
 var socket = io.connect();
-    var grade_table, i, player_name;
-
+    var grade_table, i, n, player_name, rank_change;
+var href_a = window.location.pathname.substring(16);
 //WATCHER SIDE
     socket.on('grade_collect', function(data){
        console.log('Grade was made: '+ data.horse);
@@ -40,11 +40,23 @@ var socket = io.connect();
         }
         grade_table += '</tr></table>';
         
+        $('#current_grade').html(grade_table);//showing table with current grade
         
-        
-        $('#current_grade').html(grade_table);
+        //updating scoreboard
+        socket.emit('scoreboard_update', href_a);
     });
     
+    socket.on('scoreboard_update', function(data){
+        for(i=0;i<data.groups.length;i++){
+            rank_change = '<span>Grupa '+data.groups[i].group_num+'</span><ol>';
+            for(n=0;n<data.groups.players.length;n++){
+                rank_change += '<li>#'+data.groups[i].players[n].starting_num+ ': ' +data.groups[i].players[n].horse_id + ': ' + data.groups[i].players[n] + '</li>';
+            }
+            rank_change += '</ol>';
+        }
+        $('#rank').html(rank_change);
+        
+    });
     
     
     
