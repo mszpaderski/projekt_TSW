@@ -48,11 +48,14 @@ var href_a = window.location.pathname.substring(16);
     
     socket.on('scoreboard_update', function(data){
         for(i=0;i<data.groups.length;i++){
+            var group = data.groups[i];
+            console.log(group.players);
             rank_change = '<span>Grupa '+data.groups[i].group_num+'</span><ol>';
-            for(n=0;n<data.groups.players.length;n++){
-                rank_change += '<li>#'+data.groups[i].players[n].starting_num+ ': ' +data.groups[i].players[n].horse_id + ': ' + data.groups[i].players[n] + '</li>';
+            for(n=0;n<group.players.length;n++){
+                rank_change += '<li>#'+group.players[n].starting_num+ ': ' +group.players[n].horse_id + ': ' + group.players[n].final_grade + '</li>';
             }
             rank_change += '</ol>';
+            console.log(rank_change);
         }
         $('#rank').html(rank_change);
         
