@@ -39,27 +39,27 @@ var num = 0,
     });
     
 //Saving scores on blur
-$('#type').on("blur", function(event){
+$('#type').bind("input", function(event){
     playerId = $('#player_id').val();
     grade[0] = $('#type').val();
     socket.emit('grade_change',{ playerId: playerId, grades0: grade[0], grades1: grade[1], grades2: grade[2], grades3: grade[3], grades4: grade[4]});
 });
-$('#head').on("blur", function(event){
+$('#head').bind("input", function(event){
     playerId = $('#player_id').val();
     grade[1] = $('#head').val();
     socket.emit('grade_change', { playerId: playerId, grades0: grade[0], grades1: grade[1], grades2: grade[2], grades3: grade[3], grades4: grade[4]});
 });
-$('#body').on("blur", function(event){
+$('#body').bind("input", function(event){
     playerId = $('#player_id').val();
     grade[2] = $('#body').val();
     socket.emit('grade_change', { playerId: playerId, grades0: grade[0], grades1: grade[1], grades2: grade[2], grades3: grade[3], grades4: grade[4]});
 });
-$('#legs').on("blur", function(event){
+$('#legs').bind("input", function(event){
     playerId = $('#player_id').val();
     grade[3] = $('#legs').val();
     socket.emit('grade_change', { playerId: playerId, grades0: grade[0], grades1: grade[1], grades2: grade[2], grades3: grade[3], grades4: grade[4]});
 });
-$('#move').on("blur", function(event){
+$('#move').bind("input", function(event){
     playerId = $('#player_id').val();
     grade[4] = $('#move').val();
     socket.emit('grade_change', { playerId: playerId, grades0: grade[0], grades1: grade[1], grades2: grade[2], grades3: grade[3], grades4: grade[4]});
