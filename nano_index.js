@@ -88,7 +88,10 @@ var Grade = require('./models/competitions/grade'),
 
 //Socket functions
 io.sockets.on('connection', function(socket){
-    var userId = socket.request.session.passport.user;
+    var userId;
+    if(socket.request.session.passport.user){
+        userId=socket.request.session.passport.user;
+    }else{userId='';}
     
     socket.on('grade_change', function(data){
         console.log(data + ' ' + userId);
@@ -359,9 +362,12 @@ app.use(function(req, res){
     res.render('500');
 });
 
-
+var hos_t = "10.10.4.44";
 //nasłuchiwanie serwera
 server.listen(app.get('port'), function(){
+    console.log('Server nasłuchuje na porcie:' + app.get('port'));
+});
+server.listen(app.get('port'),hos_t, function(){
     console.log('Server nasłuchuje na porcie:' + app.get('port'));
 });
 
