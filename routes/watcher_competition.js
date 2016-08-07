@@ -33,12 +33,24 @@ router.route('/show/:id').get(function(req, res) {
            console.log(competition);
            mongoose.model('Player').where('competition_id', competition._id).exec(function(err, players){
                if(err){console.log(err);} else{
+                   var horse_name = '';
+                 mongoose.model('Horse').where().exec(function(err, horsey){
+                    if(err){console.log(err);}else{
                    mongoose.model('Group').where('competition_id', competition._id).exec(function(err, groups){
                        if(err){console.log(err);} else{
                            for(var i=0;i<groups.length;i++){
                                for(var n=0;n<groups[i].players.length;n++){
                                    for(var e=0;e<players.length;e++){
                                        if(players[e].horse_id === groups[i].players[n]){
+                                           var horse_name = '';
+                                           for(var z=0;z<horsey.length;z++){
+                                               if(horsey[z]._id == players[e].horse_id){
+                                                   horse_name = horsey[z].name;
+                                                   console.log(horse_name+' znalazłem konia');
+                                                   break;
+                                               }
+                                           }
+                                           players[e].horse_id = horse_name;
                                            groups[i].players[n] = players[e];
                                             console.log('found: ' + groups[i].players[n]);
                                            break;
@@ -66,6 +78,7 @@ router.route('/show/:id').get(function(req, res) {
                                 }
                         });
                        }});
+                    }});
                }});
         }
    });

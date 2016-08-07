@@ -84,6 +84,7 @@ io.use(function(socket, next){
 var Grade = require('./models/competitions/grade'),
     Player = require('./models/competitions/player'),
     Judge_c = require('./models/competitions/judge_c'),
+    Horse = require('./models/horse'),
     mongoose = require('mongoose'); //mongo connection
 
 //Socket functions
@@ -159,10 +160,14 @@ io.sockets.on('connection', function(socket){
         Player.findOne({'horse_id' : player_id}, function(err, player){
             if(err){ console.log('Error ' +err);}
             if(player){
-                var final_grade = 0, final_type = 0, final_move = 0;
+                var final_grade = 0, final_type = 0, final_move = 0, horse_name = '';
+                Horse.findOne({'_id' : player.horse_id}, function(err, horsey){
+                    if(err){console.log(err);}else{
+                        horse_name = horsey.name;
+
                 mongoose.model('Grade').where('player_id', player._id).exec(function(err, grades){
                     if(err){console.log(err);}else{
-                        console.log(grades);
+                        //console.log(grades);
                         for(var i=0;i<grades.length;i++){
                             final_grade += parseInt(grades[i].kat_1) + parseInt(grades[i].kat_2) + parseInt(grades[i].kat_3) + parseInt(grades[i].kat_4) + parseInt(grades[i].kat_5);
                             final_type += parseInt(grades[i].kat_1);
@@ -181,17 +186,17 @@ io.sockets.on('connection', function(socket){
                             if(err){console.log(err);} else {
                                 console.log(player_u + ' ' + player);
                                 socket.broadcast.emit('current_horse_end', {horse: player});
-                                socket.broadcast.emit('grade_collect',{horse: player, grades: grades});
+                                socket.broadcast.emit('grade_collect',{horsey_name: horse_name, horse: player, grades: grades});
                             }
                         });
                     }
                 });
-                
+                }});
 
             }
         });    
     });
-    
+
     //updating scoreboard
     socket.on('scoreboard_update', function(href_a){
           mongoose.model('Competition').findById(href_a, function(err, competition){
@@ -199,25 +204,41 @@ io.sockets.on('connection', function(socket){
            console.log(competition);
            mongoose.model('Player').where('competition_id', competition._id).exec(function(err, players){
                if(err){console.log(err);} else{
+                 var horse_name = '';
+                 mongoose.model('Horse').where().exec(function(err, horsey){
+                    if(err){console.log(err);}else{
                    mongoose.model('Group').where('competition_id', competition._id).exec(function(err, groups){
                        if(err){console.log(err);} else{
                            for(var i=0;i<groups.length;i++){
                                for(var n=0;n<groups[i].players.length;n++){
                                    for(var e=0;e<players.length;e++){
                                        if(players[e].horse_id === groups[i].players[n]){
+                                           var horse_name = '';
+                                           for(var z=0;z<horsey.length;z++){
+                                               if(horsey[z]._id == players[e].horse_id){
+                                                   horse_name = horsey[z].name;
+                                                   console.log(horse_name+' znalazłem konia');
+                                                   break;
+                                               }
+                                           }
+                                           players[e].horse_id = horse_name;
                                            groups[i].players[n] = players[e];
                                             console.log('found: ' + groups[i].players[n]);
                                            break;
+                                                    
                                        }else{console.log('not found!!!');}
                                    }
                                }
                                groups[i].players.sort(function(a,b){
                                    return b.final_grade - a.final_grade;
                                });
+                                
                            }
+                           
                            socket.emit('scoreboard_update', {competition: competition, groups: groups}); 
                         }});
                        }});
+               }});
                }});
         });
 

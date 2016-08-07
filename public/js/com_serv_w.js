@@ -10,7 +10,7 @@ var href_a = window.location.pathname.substring(16);
 //WATCHER SIDE
     socket.on('grade_collect', function(data){
        console.log('Grade was made: '+ data.horse);
-        player_name = '#' + data.horse.starting_num + ': ' + data.horse.horse_id;
+        player_name = '#' + data.horse.starting_num + ': ' + data.horsey_name;
         console.log(player_name);
         $('#horse_name').html(player_name);
         grade_table = '<table><tr><td>Sędzia:</td><td>';
