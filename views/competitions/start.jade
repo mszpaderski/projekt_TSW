@@ -32,7 +32,9 @@ block content
                     ul
                       each player, n in group.players
                         li
-                          = player
+                          each horse, f in horses
+                            if(horse._id == player)
+                                = horse.name + ': ' + horse._id
                           span(id='grading#{player}')
                           button(class='grade_start', value=player) oceń
                           button(disabled=true, class='grade_stop', value=player) zakończ
