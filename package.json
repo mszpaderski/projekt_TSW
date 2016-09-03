@@ -21,6 +21,8 @@
     "express": "^4.13.4",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.13.0",
+    "fs": "0.0.1-security",
+    "https": "^1.0.0",
     "jade": "^1.11.0",
     "method-override": "^2.3.6",
     "mongodb": "^2.1.18",

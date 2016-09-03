@@ -2,10 +2,18 @@
 "use strict";
 
 var express = require('express');
+var https = require('https');
 var http = require('http');
 var app = express();
-var server = http.createServer(app);
-//var server = app.listen(3000);
+var fs = require('fs');
+
+var options = {
+  key: fs.readFileSync('conf/key.pem'),
+  cert: fs.readFileSync('conf/cert.pem')
+};
+
+//var server = http.createServer(app);
+var server = https.createServer(options, app);
 
 var socketIo = require('socket.io');
 var socketIoClient = require('socket.io-client');
@@ -62,7 +70,8 @@ var midleSession = expressSession({
     saveUninitialized: true,
     store: new (require("connect-mongo")(expressSession))({
         url: dbConfig.url
-    })
+    }),
+    ssl: true
 });
 app.use(midleSession);
 app.use(passport.initialize());
@@ -90,10 +99,11 @@ var Grade = require('./models/competitions/grade'),
 //Socket functions
 io.sockets.on('connection', function(socket){
     var userId;
+    if(socket.request.session.passport){
     if(socket.request.session.passport.user){
         userId=socket.request.session.passport.user;
     }else{userId='';}
-    
+    }
     socket.on('grade_change', function(data){
         console.log(data + ' ' + userId);
                 //Updating/creating GRADE in Mongo
@@ -217,13 +227,12 @@ io.sockets.on('connection', function(socket){
                                            for(var z=0;z<horsey.length;z++){
                                                if(horsey[z]._id == players[e].horse_id){
                                                    horse_name = horsey[z].name;
-                                                   console.log(horse_name+' znalazłem konia');
                                                    break;
                                                }
                                            }
                                            players[e].horse_id = horse_name;
                                            groups[i].players[n] = players[e];
-                                            console.log('found: ' + groups[i].players[n]);
+                                           // console.log('found: ' + groups[i].players[n]);
                                            break;
                                                     
                                        }else{console.log('not found!!!');}
@@ -255,7 +264,6 @@ io.sockets.on('connection', function(socket){
                         console.log('Sending: horse ' + horse._id + ' grade ' + grade);
                         socket.emit('current_horse_ans', { is: 'true' , horse: horse, grade: grade}); 
                     } else{
-                        console.log('qoue?');
                         socket.emit('current_horse_ans', { is: 'next', horse: horse}); 
                     }
                 });
@@ -275,7 +283,7 @@ io.sockets.on('connection', function(socket){
     });
 
     
-    console.log('a user connected' + userId);
+    console.log('a user connected ' + userId);
     socket.on('disconnect', function(){
     console.log('user disconnected');
   });
